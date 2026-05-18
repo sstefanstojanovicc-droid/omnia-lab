@@ -61,11 +61,7 @@ Continuing seamlessly from the prior cyan BIM wireframe frame: the glowing digit
 
 **Start image:** `public/video/room-03-endframe.jpg`
 
-**Post-trim:** Full export often has a mismatched first half. Keep only **4s–8s** (unfinished balcony / facade install):
-
-`./scripts/trim-video.sh public/video/room-04-full.mp4 public/video/room-04.mp4 4.0 4.0`
-
-**Scroll:** Room 03 uses `clipScrub: { in: 0.52, out: 1 }` so the structure segment ends on the front-corner concrete that matches this clip’s first frame.
+**Scroll sync (no regen):** SSIM-matched handoff at **room-03 @ 7.6s** ↔ **room-04-full @ 3.3s** (not 4.0s). Trim: `./scripts/trim-video.sh public/video/room-04-full.mp4 public/video/room-04.mp4 3.3 1.65`. Structure `clipScrub: { in: 0.68, out: 0.945 }`. Instant cut at boundary.
 
 ```
 Continuing seamlessly from the prior concrete shell frame: the same contemporary minimalist villa mid-construction — identical footprint, roof line, and window grid as before. Curtain wall aluminum frames and large glass panels are lifted into place along the facade, raw concrete structure still visible between frames, construction crane soft bokeh in background, slow stabilized lateral truck right along the building elevation, grey overcast architectural documentary light, desaturated monochrome, shallow depth of field, fine film grain, no people, no text.

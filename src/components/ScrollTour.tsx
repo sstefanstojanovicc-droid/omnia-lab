@@ -7,6 +7,7 @@ import {
   type ArchitectureBuildLayersHandle,
 } from "./ArchitectureBuildLayers";
 import {
+  HANDOFF_STRUCTURE_ENVELOPE,
   bindScrubVideo,
   prepareScrubVideo,
   roomLocalProgress,
@@ -59,7 +60,8 @@ export const TOUR_ROOMS: TourRoom[] = [
     headline: "Concrete shell",
     body: "Grey phase: cast-in-place structure, slab edges, and raw tectonic volume on site.",
     clip: "/video/room-03.mp4",
-    clipScrub: { in: 0.78, out: 1 },
+    /** Ends at SSIM-matched 7.6s (front-corner concrete). */
+    clipScrub: { in: 0.68, out: 0.945 },
   },
   {
     id: "envelope",
@@ -68,6 +70,7 @@ export const TOUR_ROOMS: TourRoom[] = [
     headline: "Glazing & facade",
     body: "Curtain wall, openings, and cladding layered onto the frame — light and weather sealed.",
     clip: "/video/room-04.mp4",
+    /** Trimmed from full @ 3.3s — frame 0 matches structure end; scroll through window install. */
   },
   {
     id: "complete",
@@ -239,13 +242,29 @@ export function ScrollTour() {
       const opacity = roomVisualOpacity(p, i);
       if (opacity < 0.02) continue;
 
-      const local = roomLocalProgress(p, i, ROOM_COUNT);
       const room = TOUR_ROOMS[i];
-      const time = scrubTimeFromLocal(
-        local,
-        video.duration,
-        room?.clipScrub,
-      );
+      let local = roomLocalProgress(p, i, ROOM_COUNT);
+      let time: number;
+
+      if (i === STRUCTURE_ROOM_INDEX) {
+        if (local > 0.92) local = 1;
+        time = scrubTimeFromLocal(local, video.duration, room?.clipScrub);
+        if (local >= 0.98) {
+          time = Math.min(
+            video.duration - 0.001,
+            HANDOFF_STRUCTURE_ENVELOPE.structureEndSec,
+          );
+        }
+      } else if (i === ENVELOPE_ROOM_INDEX) {
+        if (local < 0.06) local = 0;
+        time = scrubTimeFromLocal(local, video.duration, room?.clipScrub);
+        if (local <= 0.02) {
+          time = 0;
+        }
+      } else {
+        time = scrubTimeFromLocal(local, video.duration, room?.clipScrub);
+      }
+
       scrubVideoTo(video, time);
     }
   }, []);

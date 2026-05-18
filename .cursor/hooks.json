@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "hooks": {
+    "afterFileEdit": [
+      {
+        "command": ".cursor/hooks/auto-sync.sh",
+        "timeout": 120
+      }
+    ],
+    "stop": [
+      {
+        "command": ".cursor/hooks/auto-sync.sh --now",
+        "timeout": 120
+      }
+    ]
+  }
+}

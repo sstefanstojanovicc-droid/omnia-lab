@@ -24,6 +24,12 @@ export type ClipScrubRange = {
   out?: number;
 };
 
+/** SSIM-matched handoff (room-03 ↔ room-04-full). */
+export const HANDOFF_STRUCTURE_ENVELOPE = {
+  structureEndSec: 7.6,
+  envelopeStartSecFull: 3.3,
+} as const;
+
 /** Map segment-local scroll (0–1) to a timestamp using optional in/out trim. */
 export function scrubTimeFromLocal(
   local: number,
@@ -56,7 +62,10 @@ export function roomOpacity(
   return 1;
 }
 
-/** Narrow cut between two rooms — avoids double-exposure when clips must match exactly. */
+/**
+ * Instant cut between two rooms — no overlap (prevents double-exposure ghosting).
+ * Fade in/out within each segment still uses roomOpacity.
+ */
 export function roomOpacityHardCut(
   globalProgress: number,
   roomIndex: number,
@@ -65,21 +74,14 @@ export function roomOpacityHardCut(
   roomCount: number,
 ): number {
   const boundary = (fromIndex + 1) / roomCount;
-  const blend = (1 / roomCount) * 0.06;
 
   if (roomIndex === fromIndex) {
     if (globalProgress >= boundary) return 0;
-    if (globalProgress >= boundary - blend) {
-      return (boundary - globalProgress) / blend;
-    }
     return roomOpacity(globalProgress, roomIndex, roomCount);
   }
 
   if (roomIndex === toIndex) {
-    if (globalProgress < boundary - blend) return 0;
-    if (globalProgress < boundary) {
-      return (globalProgress - (boundary - blend)) / blend;
-    }
+    if (globalProgress < boundary) return 0;
     return roomOpacity(globalProgress, roomIndex, roomCount);
   }
 
