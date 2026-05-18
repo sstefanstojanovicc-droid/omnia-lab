@@ -1,15 +1,7 @@
-const words = [
-  "OMNIA",
-  "SPATIAL",
-  "IMMERSIVE",
-  "EXPERIENTIAL",
-  "ARCHITECTURE",
-  "INTERIOR",
-  "TOTALITY",
-];
+import { site } from "@/content/site";
 
 export function Marquee() {
-  const track = [...words, ...words];
+  const track = [...site.marquee, ...site.marquee];
 
   return (
     <section className="overflow-hidden border-y border-line bg-paper py-6" aria-hidden>

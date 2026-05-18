@@ -1,3 +1,4 @@
+import { site } from "@/content/site";
 import type { Metadata } from "next";
 import { IBM_Plex_Mono, Syne } from "next/font/google";
 import "./globals.css";
@@ -15,12 +16,11 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "OMNIA — Immersive Spatial Design",
-  description:
-    "OMNIA is a multidisciplinary practice by architect and interior designer Dina Rosic — immersive, experiential, spatial design. Est. 2026.",
+  title: site.metadata.title,
+  description: site.metadata.description,
   openGraph: {
     title: "OMNIA",
-    description: "All things. Immersive / Experiential / Spatial.",
+    description: site.metadata.openGraphDescription,
     type: "website",
   },
 };

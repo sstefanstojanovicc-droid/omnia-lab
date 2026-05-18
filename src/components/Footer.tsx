@@ -28,7 +28,7 @@ export function Footer() {
           </a>
         </nav>
         <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-muted">
-          © {year} OMNIA Lab — Est. 2026
+          © {year} OMNIA — Est. 2026
         </p>
       </div>
     </footer>

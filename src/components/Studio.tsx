@@ -1,3 +1,4 @@
+import { site } from "@/content/site";
 import Image from "next/image";
 import { Reveal } from "./Reveal";
 
@@ -10,7 +11,7 @@ export function Studio() {
             <div className="relative aspect-[4/5] overflow-hidden">
               <Image
                 src="/assets/IMG_4867-83e34d2d-e5ce-42ec-ba29-5a2ab76883b7.png"
-                alt="Studio research and drawing"
+                alt="Studio"
                 fill
                 className="object-cover"
                 sizes="(max-width: 1024px) 100vw, 50vw"
@@ -19,20 +20,16 @@ export function Studio() {
           </Reveal>
           <Reveal delay={0.15}>
             <p className="font-mono text-[10px] uppercase tracking-[0.4em] text-paper/50">
-              05 — Studio
+              Studio
             </p>
             <h2 className="mt-6 font-display text-4xl font-semibold uppercase leading-tight tracking-tight md:text-5xl">
-              Dina Rosic
+              {site.studio.name}
             </h2>
-            <p className="mt-8 font-mono text-[11px] uppercase leading-[1.9] tracking-[0.1em] text-paper/60">
-              Architect and interior designer. Founder of OMNIA — a practice born from
-              the belief that space should hold everything at once: restraint and drama,
-              precision and atmosphere, the technical and the poetic.
+            <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.15em] text-paper/50">
+              {site.studio.role}
             </p>
-            <p className="mt-6 font-mono text-[11px] uppercase leading-[1.9] tracking-[0.1em] text-paper/60">
-              Drawing from cinematic interiors, experimental material studies, and
-              rigorous architectural thinking, the studio works across residential,
-              hospitality, and conceptual spatial projects.
+            <p className="mt-8 font-mono text-[11px] uppercase leading-[1.9] tracking-[0.1em] text-paper/60">
+              {site.manifesto}
             </p>
             <a
               href="https://www.instagram.com/omnia___lab"

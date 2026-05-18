@@ -62,30 +62,139 @@ export function roomOpacity(
   return 1;
 }
 
+function smoothstep(t: number): number {
+  const x = Math.min(1, Math.max(0, t));
+  return x * x * (3 - 2 * x);
+}
+
+/** Min dissolve width as a fraction of one room segment (covers roomOpacity fades). */
+export const HANDOFF_BLEND_SEGMENT = 0.68;
+
+export function handoffBoundary(fromIndex: number, roomCount: number): number {
+  return (fromIndex + 1) / roomCount;
+}
+
+/** Scroll span (0–1) for a cross-dissolve between adjacent rooms. */
+export function handoffBlendWidth(roomCount: number): number {
+  const segment = 1 / roomCount;
+  const roomFade = segment * 0.32 * 2;
+  return Math.max(segment * HANDOFF_BLEND_SEGMENT, roomFade);
+}
+
+/** @deprecated Use handoffBlendWidth */
+export const structureEnvelopeBlendWidth = handoffBlendWidth;
+
+/** True while cross-dissolving `fromIndex` into `fromIndex + 1`. */
+export function isInHandoffBlend(
+  globalProgress: number,
+  fromIndex: number,
+  roomCount: number,
+): boolean {
+  const boundary = handoffBoundary(fromIndex, roomCount);
+  const blend = handoffBlendWidth(roomCount);
+  return (
+    globalProgress >= boundary - blend && globalProgress <= boundary + blend
+  );
+}
+
+/** @deprecated Use isInHandoffBlend */
+export const isInStructureEnvelopeBlend = isInHandoffBlend;
+
 /**
- * Instant cut between two rooms — no overlap (prevents double-exposure ghosting).
- * Fade in/out within each segment still uses roomOpacity.
+ * Complementary dissolve: opacities sum to 1 through the handoff (no dark gap).
+ * Skips per-segment start/end fades at the boundary — those caused dimming after crossfade.
  */
-export function roomOpacityHardCut(
+export function roomOpacityDissolve(
   globalProgress: number,
   roomIndex: number,
   fromIndex: number,
   toIndex: number,
   roomCount: number,
 ): number {
-  const boundary = (fromIndex + 1) / roomCount;
+  const segment = 1 / roomCount;
+  const boundary = handoffBoundary(fromIndex, roomCount);
+  const blend = handoffBlendWidth(roomCount);
+  const fade = segment * 0.32;
+  const start = roomIndex * segment;
+  const end = (roomIndex + 1) * segment;
 
   if (roomIndex === fromIndex) {
     if (globalProgress >= boundary) return 0;
-    return roomOpacity(globalProgress, roomIndex, roomCount);
+    if (globalProgress >= boundary - blend) {
+      const t = (globalProgress - (boundary - blend)) / blend;
+      return 1 - smoothstep(t);
+    }
+    if (globalProgress < start - fade || globalProgress > end + fade) return 0;
+    if (globalProgress < start + fade) {
+      return (globalProgress - (start - fade)) / (fade * 2);
+    }
+    return 1;
   }
 
   if (roomIndex === toIndex) {
-    if (globalProgress < boundary) return 0;
-    return roomOpacity(globalProgress, roomIndex, roomCount);
+    if (globalProgress < boundary - blend) return 0;
+    if (globalProgress < boundary) {
+      const t = (globalProgress - (boundary - blend)) / blend;
+      return smoothstep(t);
+    }
+    if (globalProgress > end + fade) return 0;
+    if (globalProgress > end - fade) {
+      return (end + fade - globalProgress) / (fade * 2);
+    }
+    return 1;
   }
 
   return roomOpacity(globalProgress, roomIndex, roomCount);
+}
+
+/** Handoff pair active at `globalProgress` for `roomIndex` (if any). */
+export function activeHandoffAt(
+  globalProgress: number,
+  roomIndex: number,
+  handoffs: { from: number; to: number }[],
+  roomCount: number,
+  warm = 0.03,
+): { from: number; to: number } | null {
+  for (const pair of handoffs) {
+    if (roomIndex !== pair.from && roomIndex !== pair.to) continue;
+    const boundary = handoffBoundary(pair.from, roomCount);
+    const blend = handoffBlendWidth(roomCount);
+    if (
+      globalProgress >= boundary - blend - warm &&
+      globalProgress <= boundary + blend + warm
+    ) {
+      return pair;
+    }
+  }
+  return null;
+}
+
+/** During dissolve, scrub the incoming clip 0→`introMax` while the outgoing clip holds. */
+export function handoffDissolveLocal(
+  globalProgress: number,
+  fromIndex: number,
+  roomCount: number,
+  introMax = 0.4,
+): number {
+  const boundary = handoffBoundary(fromIndex, roomCount);
+  const blend = handoffBlendWidth(roomCount);
+
+  if (globalProgress < boundary - blend) return 0;
+  if (globalProgress >= boundary) {
+    return roomLocalProgress(globalProgress, fromIndex + 1, roomCount);
+  }
+
+  const t = (globalProgress - (boundary - blend)) / blend;
+  return smoothstep(t) * introMax;
+}
+
+/** @deprecated Use handoffDissolveLocal */
+export function envelopeDissolveLocal(
+  globalProgress: number,
+  fromIndex: number,
+  roomCount: number,
+): number {
+  return handoffDissolveLocal(globalProgress, fromIndex, roomCount, 0.42);
 }
 
 const SEEK_EPSILON = 0.018;

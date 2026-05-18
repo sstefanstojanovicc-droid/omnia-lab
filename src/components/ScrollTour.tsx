@@ -1,5 +1,6 @@
 "use client";
 
+import { site } from "@/content/site";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
@@ -8,11 +9,15 @@ import {
 } from "./ArchitectureBuildLayers";
 import {
   HANDOFF_STRUCTURE_ENVELOPE,
+  activeHandoffAt,
   bindScrubVideo,
+  handoffBlendWidth,
+  handoffDissolveLocal,
+  isInHandoffBlend,
   prepareScrubVideo,
   roomLocalProgress,
   roomOpacity,
-  roomOpacityHardCut,
+  roomOpacityDissolve,
   scrollProgressFromSection,
   scrubTimeFromLocal,
   scrubVideoTo,
@@ -35,86 +40,69 @@ export type TourRoom = {
   cta?: { label: string; href: string; primary?: boolean };
 };
 
-/** Architecture build timeline — scroll scrubs one continuous sequence (vertical scroll → horizontal time). */
-export const TOUR_ROOMS: TourRoom[] = [
-  {
-    id: "concept",
-    index: "01",
-    title: "Concept",
-    headline: "Planning & massing",
-    body: "Hand sketches, site diagrams, and elevation studies — the first translation of intent into measurable form.",
-    clip: "/video/room-01.mp4",
-  },
-  {
-    id: "cad",
-    index: "02",
-    title: "CAD / BIM",
-    headline: "Technical design",
-    body: "Wireframe structure, sections, and coordinated systems — precision before ground breaks.",
-    clip: "/video/room-02.mp4",
-  },
+const TOUR_CLIPS: Pick<TourRoom, "id" | "clip" | "clipScrub" | "cta">[] = [
+  { id: "concept", clip: "/video/room-01.mp4" },
+  { id: "cad", clip: "/video/room-02.mp4" },
   {
     id: "structure",
-    index: "03",
-    title: "Structure",
-    headline: "Concrete shell",
-    body: "Grey phase: cast-in-place structure, slab edges, and raw tectonic volume on site.",
     clip: "/video/room-03.mp4",
-    /** Ends at SSIM-matched 7.6s (front-corner concrete). */
     clipScrub: { in: 0.68, out: 0.945 },
   },
-  {
-    id: "envelope",
-    index: "04",
-    title: "Envelope",
-    headline: "Glazing & facade",
-    body: "Curtain wall, openings, and cladding layered onto the frame — light and weather sealed.",
-    clip: "/video/room-04.mp4",
-    /** Trimmed from full @ 3.3s — frame 0 matches structure end; scroll through window install. */
-  },
-  {
-    id: "complete",
-    index: "05",
-    title: "Built form",
-    headline: "Exterior complete",
-    body: "Landscape, material patina, and dusk light — architecture readable as a single composed object.",
-    clip: "/video/room-05.mp4",
-  },
-  {
-    id: "approach",
-    index: "06",
-    title: "Approach",
-    headline: "Cinematic arrival",
-    body: "Slow push toward the main entry — scale, threshold, and anticipation before crossing the line.",
-    clip: "/video/room-06.mp4",
-  },
+  { id: "envelope", clip: "/video/room-04.mp4" },
+  { id: "complete", clip: "/video/room-05.mp4" },
+  { id: "approach", clip: "/video/room-06.mp4" },
   {
     id: "arrival",
-    index: "07",
-    title: "Arrival",
-    headline: "Through the door",
-    body: "Doors open; camera enters the main volume — interior architecture revealed as lived space.",
     clip: "/video/room-07.mp4",
-    cta: { label: "View our work", href: "#work", primary: true },
+    cta: { label: "View work", href: "#work", primary: true },
   },
 ];
+
+/** Scroll-scrub build sequence — copy from site, clips merged locally. */
+export const TOUR_ROOMS: TourRoom[] = site.tour.map((room) => {
+  const clip = TOUR_CLIPS.find((c) => c.id === room.id);
+  return { ...room, ...clip };
+});
 
 const ROOM_COUNT = TOUR_ROOMS.length;
 const SCROLL_VH = ROOM_COUNT * 100;
 const STRUCTURE_ROOM_INDEX = TOUR_ROOMS.findIndex((r) => r.id === "structure");
 const ENVELOPE_ROOM_INDEX = TOUR_ROOMS.findIndex((r) => r.id === "envelope");
 
+/** Every adjacent clip pair cross-dissolves (same as rooms 01→02 that felt seamless). */
+const DISSOLVE_HANDOFFS: { from: number; to: number }[] = Array.from(
+  { length: ROOM_COUNT - 1 },
+  (_, i) => ({ from: i, to: i + 1 }),
+);
+
 function roomVisualOpacity(globalProgress: number, roomIndex: number): number {
-  if (STRUCTURE_ROOM_INDEX >= 0 && ENVELOPE_ROOM_INDEX >= 0) {
-    return roomOpacityHardCut(
+  const pair = activeHandoffAt(
+    globalProgress,
+    roomIndex,
+    DISSOLVE_HANDOFFS,
+    ROOM_COUNT,
+  );
+  if (pair) {
+    return roomOpacityDissolve(
       globalProgress,
       roomIndex,
-      STRUCTURE_ROOM_INDEX,
-      ENVELOPE_ROOM_INDEX,
+      pair.from,
+      pair.to,
       ROOM_COUNT,
     );
   }
   return roomOpacity(globalProgress, roomIndex, ROOM_COUNT);
+}
+
+function inDissolveHandoff(globalProgress: number): boolean {
+  for (let i = 0; i < ROOM_COUNT; i++) {
+    if (
+      activeHandoffAt(globalProgress, i, DISSOLVE_HANDOFFS, ROOM_COUNT) !== null
+    ) {
+      return true;
+    }
+  }
+  return false;
 }
 
 export function ScrollTour() {
@@ -234,31 +222,51 @@ export function ScrollTour() {
       return;
     }
 
+    const handoff = inDissolveHandoff(p);
+
     for (let i = 0; i < ROOM_COUNT; i++) {
       if (!clipAvailableRef.current[i] || !clipsReadyRef.current[i]) continue;
       const video = clipRefs.current[i];
       if (!video || !Number.isFinite(video.duration)) continue;
 
       const opacity = roomVisualOpacity(p, i);
-      if (opacity < 0.02) continue;
+      const pair = handoffPairForRoom(i);
+      const isHandoffClip = pair !== null;
+      if (!handoff && opacity < 0.02) continue;
+      if (handoff && !isHandoffClip && opacity < 0.02) continue;
 
       const room = TOUR_ROOMS[i];
       let local = roomLocalProgress(p, i, ROOM_COUNT);
       let time: number;
 
-      if (i === STRUCTURE_ROOM_INDEX) {
-        if (local > 0.92) local = 1;
+      const inBlend =
+        pair !== null && isInHandoffBlend(p, pair.from, ROOM_COUNT);
+
+      if (pair && i === pair.from) {
+        if (inBlend || local > 0.92) local = 1;
         time = scrubTimeFromLocal(local, video.duration, room?.clipScrub);
-        if (local >= 0.98) {
+        if (i === STRUCTURE_ROOM_INDEX && (inBlend || local >= 0.98)) {
           time = Math.min(
             video.duration - 0.001,
             HANDOFF_STRUCTURE_ENVELOPE.structureEndSec,
           );
+        } else if (inBlend || local >= 0.98) {
+          time = video.duration - 0.001;
         }
-      } else if (i === ENVELOPE_ROOM_INDEX) {
-        if (local < 0.06) local = 0;
+      } else if (pair && i === pair.to) {
+        if (inBlend) {
+          const introMax =
+            i === ENVELOPE_ROOM_INDEX
+              ? 0.42
+              : i === APPROACH_ROOM_INDEX
+                ? 0.38
+                : 0.4;
+          local = handoffDissolveLocal(p, pair.from, ROOM_COUNT, introMax);
+        } else if (local < 0.06) {
+          local = 0;
+        }
         time = scrubTimeFromLocal(local, video.duration, room?.clipScrub);
-        if (local <= 0.02) {
+        if (!inBlend && local <= 0.02) {
           time = 0;
         }
       } else {
@@ -358,7 +366,17 @@ export function ScrollTour() {
                     clipRefs.current[i] = el;
                   }}
                   className="scroll-tour-video absolute inset-0 h-full w-full object-cover"
-                  style={{ opacity: 0 }}
+                  style={{
+                    opacity: 0,
+                    zIndex:
+                      i === APPROACH_ROOM_INDEX
+                        ? 5
+                        : i === ENVELOPE_ROOM_INDEX || i === COMPLETE_ROOM_INDEX
+                          ? 4
+                          : i === STRUCTURE_ROOM_INDEX
+                            ? 3
+                            : i,
+                  }}
                   src={room.clip}
                   muted
                   playsInline
@@ -443,7 +461,7 @@ export function ScrollTour() {
                   style={{ opacity: 0, visibility: "hidden" }}
                 >
                   <p className="font-mono text-[10px] uppercase tracking-[0.45em] text-white/50">
-                    {room.index} — {room.id.replace(/-/g, " ")}
+                    {i === 0 ? site.direction : `${room.index} — ${room.title}`}
                   </p>
                   <h1 className="mt-4 font-display text-[clamp(2.25rem,6vw,4.5rem)] font-semibold uppercase leading-[1.05] tracking-[-0.02em] text-white">
                     {room.title}
@@ -483,7 +501,7 @@ export function ScrollTour() {
 
           <div className="mt-8 flex items-center justify-between gap-6">
             <span className="font-mono text-[9px] uppercase tracking-[0.35em] text-white/40">
-              Scroll — build timeline
+              Scroll
             </span>
             <div className="h-px flex-1 max-w-[200px] overflow-hidden bg-white/15">
               <div

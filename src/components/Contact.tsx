@@ -1,5 +1,6 @@
 "use client";
 
+import { site } from "@/content/site";
 import { Reveal } from "./Reveal";
 import { useState } from "react";
 
@@ -12,14 +13,13 @@ export function Contact() {
         <div className="grid gap-16 lg:grid-cols-2">
           <Reveal>
             <p className="font-mono text-[10px] uppercase tracking-[0.4em] text-ink-muted">
-              06 — Contact
+              Contact
             </p>
             <h2 className="mt-6 font-display text-4xl font-semibold uppercase tracking-tight md:text-5xl">
-              Begin a project
+              {site.contact.title}
             </h2>
             <p className="mt-6 max-w-md font-mono text-[11px] uppercase leading-relaxed tracking-[0.12em] text-ink-muted">
-              For commissions, collaborations, and press — share your vision. We respond
-              within a few business days.
+              {site.contact.description}
             </p>
             <div className="mt-10 space-y-3 font-mono text-[11px] uppercase tracking-[0.15em]">
               <a
