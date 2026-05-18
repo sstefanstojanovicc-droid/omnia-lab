@@ -50,7 +50,7 @@ export function Header() {
             : "bg-transparent"
         } ${onHero ? "text-white" : "text-ink"}`}
       >
-        <div className="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-5 md:px-10">
+        <div className="mx-auto flex max-w-[1400px] items-center justify-between px-5 py-4 sm:px-6 md:px-10 md:py-5">
           <Link
             href="/"
             className="group block transition-opacity hover:opacity-85"
@@ -84,7 +84,7 @@ export function Header() {
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen((o) => !o)}
-            className="relative z-[60] flex h-10 w-10 flex-col items-center justify-center gap-1.5 md:hidden"
+            className="-mr-2 relative z-[60] flex h-11 w-11 flex-col items-center justify-center gap-1.5 md:hidden"
           >
             <span
               className={`h-px w-6 transition-transform duration-300 ${
@@ -113,7 +113,7 @@ export function Header() {
         }}
         className="fixed inset-0 z-40 bg-paper md:hidden"
       >
-        <nav className="flex h-full flex-col justify-center gap-8 px-10">
+        <nav className="flex h-full flex-col justify-center gap-7 px-6 pb-[env(safe-area-inset-bottom)] pt-[env(safe-area-inset-top)] sm:px-10">
           {links.map((link, i) => (
             <motion.div
               key={link.href}
@@ -124,7 +124,7 @@ export function Header() {
               <Link
                 href={link.href}
                 onClick={() => setMenuOpen(false)}
-                className="font-display text-4xl font-semibold uppercase tracking-tight"
+                className="font-display text-[clamp(2.25rem,13vw,4rem)] font-semibold uppercase leading-none tracking-tight"
               >
                 {link.label}
               </Link>
