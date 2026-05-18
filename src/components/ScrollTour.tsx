@@ -142,6 +142,7 @@ export function ScrollTour() {
 
   const progressRef = useRef(0);
   const isMobileScrubRef = useRef(false);
+  const mobileAutoRoomRef = useRef(0);
   const mobilePlayingRoomRef = useRef<number | null>(null);
   const videoModeRef = useRef<"tour" | "rooms" | "hero" | "detecting">(
     "detecting",
@@ -159,6 +160,7 @@ export function ScrollTour() {
     Array(ROOM_COUNT).fill(false),
   );
   const [isMobileScrub, setIsMobileScrub] = useState(false);
+  const [mobileAutoRoom, setMobileAutoRoom] = useState(0);
   const [activeRoom, setActiveRoom] = useState(0);
   /** UI-only snapshot; scroll loop does not call setState per frame */
   const [progressUi, setProgressUi] = useState(0);
@@ -170,6 +172,10 @@ export function ScrollTour() {
   useEffect(() => {
     isMobileScrubRef.current = isMobileScrub;
   }, [isMobileScrub]);
+
+  useEffect(() => {
+    mobileAutoRoomRef.current = mobileAutoRoom;
+  }, [mobileAutoRoom]);
 
   useEffect(() => {
     clipsReadyRef.current = clipsReady;
@@ -260,6 +266,41 @@ export function ScrollTour() {
     });
   }, []);
 
+  const setMobilePlaylistRoom = useCallback((index: number) => {
+    const next = Math.min(ROOM_COUNT - 1, Math.max(0, index));
+    mobileAutoRoomRef.current = next;
+    setMobileAutoRoom(next);
+    setActiveRoom(next);
+  }, []);
+
+  const advanceMobilePlaylist = useCallback(
+    (fromIndex: number) => {
+      const available = clipAvailableRef.current;
+      for (let step = 1; step <= ROOM_COUNT; step++) {
+        const next = (fromIndex + step) % ROOM_COUNT;
+        if (available[next]) {
+          setMobilePlaylistRoom(next);
+          return;
+        }
+      }
+    },
+    [setMobilePlaylistRoom],
+  );
+
+  const updateMobileProgress = useCallback((roomIdx: number) => {
+    const video = clipRefs.current[roomIdx];
+    const duration = video?.duration;
+    const local =
+      video && duration && Number.isFinite(duration) && duration > 0
+        ? video.currentTime / duration
+        : 0;
+    const global = Math.min(1, (roomIdx + local) / ROOM_COUNT);
+    progressRef.current = global;
+    if (progressBarRef.current) {
+      progressBarRef.current.style.width = `${global * 100}%`;
+    }
+  }, []);
+
   const syncMobilePlayback = useCallback((roomIdx: number) => {
     if (mobilePlayingRoomRef.current !== roomIdx) {
       mobilePlayingRoomRef.current = roomIdx;
@@ -283,7 +324,7 @@ export function ScrollTour() {
     if (!active || !clipAvailableRef.current[roomIdx]) return;
     active.muted = true;
     active.playsInline = true;
-    active.loop = true;
+    active.loop = false;
     if (active.paused) {
       active.play().catch(() => {
         /* muted inline autoplay can still be delayed until the browser is ready */
@@ -292,16 +333,22 @@ export function ScrollTour() {
   }, []);
 
   const syncOverlay = useCallback((p: number) => {
-    progressRef.current = p;
-    if (progressBarRef.current) {
-      progressBarRef.current.style.width = `${p * 100}%`;
-    }
-
     const roomIdx = Math.min(ROOM_COUNT - 1, Math.floor(p * ROOM_COUNT));
     const mode = videoModeRef.current;
     const available = clipAvailableRef.current;
     const ready = clipsReadyRef.current;
     const anyClipAvailable = available.some(Boolean);
+    const displayRoomIdx =
+      isMobileScrubRef.current && mode === "rooms"
+        ? mobileAutoRoomRef.current
+        : roomIdx;
+
+    if (!(isMobileScrubRef.current && mode === "rooms")) {
+      progressRef.current = p;
+      if (progressBarRef.current) {
+        progressBarRef.current.style.width = `${p * 100}%`;
+      }
+    }
 
     buildLayersRef.current?.setProgress(
       mode === "hero" || (mode === "rooms" && !anyClipAvailable) ? p : 0,
@@ -310,7 +357,7 @@ export function ScrollTour() {
     for (let i = 0; i < ROOM_COUNT; i++) {
       const opacity =
         isMobileScrubRef.current && mode === "rooms"
-          ? roomIdx === i
+          ? displayRoomIdx === i
             ? 1
             : 0
           : roomVisualOpacity(p, i);
@@ -322,8 +369,8 @@ export function ScrollTour() {
       }
       const nav = navRefs.current[i];
       if (nav) {
-        nav.classList.toggle("text-white", roomIdx === i);
-        nav.classList.toggle("text-white/25", roomIdx !== i);
+        nav.classList.toggle("text-white", displayRoomIdx === i);
+        nav.classList.toggle("text-white/25", displayRoomIdx !== i);
       }
       const video = clipRefs.current[i];
       if (video && available[i] && ready[i]) {
@@ -338,7 +385,7 @@ export function ScrollTour() {
     if (mode === "detecting") return;
 
     if (isMobileScrubRef.current && mode === "rooms") {
-      const roomIdx = Math.min(ROOM_COUNT - 1, Math.floor(p * ROOM_COUNT));
+      const roomIdx = mobileAutoRoomRef.current;
       syncMobilePlayback(roomIdx);
       return;
     }
@@ -413,7 +460,10 @@ export function ScrollTour() {
       syncOverlay(p);
       syncPlayback(p);
 
-      const roomIdx = Math.min(ROOM_COUNT - 1, Math.floor(p * ROOM_COUNT));
+      const roomIdx =
+        isMobileScrubRef.current && videoModeRef.current === "rooms"
+          ? mobileAutoRoomRef.current
+          : Math.min(ROOM_COUNT - 1, Math.floor(p * ROOM_COUNT));
       if (roomIdx !== lastRoom) {
         lastRoom = roomIdx;
         setActiveRoom(roomIdx);
@@ -499,15 +549,27 @@ export function ScrollTour() {
                   poster={room.poster ?? HERO_POSTER}
                   muted
                   playsInline
-                  autoPlay={isMobileScrub && i === activeRoom}
-                  loop={isMobileScrub}
+                  autoPlay={isMobileScrub && i === mobileAutoRoom}
+                  loop={false}
                   preload={
-                    isMobileScrub && i > activeRoom + 1 ? "metadata" : "auto"
+                    isMobileScrub && i > mobileAutoRoom + 1
+                      ? "metadata"
+                      : "auto"
                   }
                   aria-hidden
                   onLoadedMetadata={() => markClipReady(i)}
                   onLoadedData={() => markClipReady(i)}
                   onCanPlay={() => markClipReady(i)}
+                  onTimeUpdate={() => {
+                    if (isMobileScrub && i === mobileAutoRoom) {
+                      updateMobileProgress(i);
+                    }
+                  }}
+                  onEnded={() => {
+                    if (isMobileScrub) {
+                      advanceMobilePlaylist(i);
+                    }
+                  }}
                   onError={() => {
                     setClipAvailable((prev) => {
                       const next = [...prev];
@@ -560,7 +622,7 @@ export function ScrollTour() {
             {TOUR_ROOMS.map((room, i) => {
               const opacity =
                 isMobileScrub && videoMode === "rooms"
-                  ? activeRoom === i
+                  ? mobileAutoRoom === i
                     ? 1
                     : 0
                   : roomVisualOpacity(progressUi, i);
