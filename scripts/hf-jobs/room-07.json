@@ -1,0 +1,11 @@
+{
+  "id": "c2db1dfb-be61-45bc-bc0f-84bb23ad3507",
+  "job_set_type": "kling3_0",
+  "continues_from": "63dcb746-c9fa-4d17-8bd3-c59026f64e91",
+  "start_image": "public/video/room-06-endframe.jpg",
+  "result_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3CDAwEwtHtjj9Oc1jAn2BnvN8Px/hf_20260518_131338_c2db1dfb-be61-45bc-bc0f-84bb23ad3507.mp4",
+  "local_path": "public/video/room-07.mp4",
+  "credits": 16,
+  "duration_s": 8,
+  "prompt": "Continuing from reference image, same contemporary villa entrance. Glass doors slide open, smooth first-person walk into double-height living space, concrete and wood, tall glazing, soft daylight, architectural interior, empty, no people, no text."
+}

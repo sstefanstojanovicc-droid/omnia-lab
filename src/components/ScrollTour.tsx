@@ -185,11 +185,10 @@ export function ScrollTour() {
     const mode = videoModeRef.current;
     const available = clipAvailableRef.current;
     const ready = clipsReadyRef.current;
-    const activeClipLive =
-      mode === "rooms" && available[roomIdx] && ready[roomIdx];
+    const anyClipAvailable = available.some(Boolean);
 
     buildLayersRef.current?.setProgress(
-      mode === "hero" || (mode === "rooms" && !activeClipLive) ? p : 0,
+      mode === "hero" || (mode === "rooms" && !anyClipAvailable) ? p : 0,
     );
 
     for (let i = 0; i < ROOM_COUNT; i++) {
@@ -232,8 +231,8 @@ export function ScrollTour() {
       const opacity = roomVisualOpacity(p, i);
       const pair = activeHandoffAt(p, i, DISSOLVE_HANDOFFS, ROOM_COUNT);
       const isHandoffClip = pair !== null;
-      if (!handoff && opacity < 0.02) continue;
-      if (handoff && !isHandoffClip && opacity < 0.02) continue;
+      if (!handoff && opacity < 0.04) continue;
+      if (handoff && !isHandoffClip && opacity < 0.04) continue;
 
       const room = TOUR_ROOMS[i];
       let local = roomLocalProgress(p, i, ROOM_COUNT);
@@ -317,12 +316,10 @@ export function ScrollTour() {
     return () => cleanups.forEach((fn) => fn());
   }, [videoMode, clipAvailable, clipsReady]);
 
-  const activeClipLive =
-    videoMode === "rooms" &&
-    clipAvailable[activeRoom] &&
-    clipsReady[activeRoom];
+  const anyClipAvailable = clipAvailable.some(Boolean);
+  /** CSS placeholders only when no room mp4s exist — never overlay real clips (caused prod “glitch”). */
   const showBuildLayers =
-    videoMode === "hero" || (videoMode === "rooms" && !activeClipLive);
+    videoMode === "hero" || (videoMode === "rooms" && !anyClipAvailable);
 
   return (
     <section
