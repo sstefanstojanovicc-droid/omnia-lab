@@ -142,6 +142,7 @@ export function ScrollTour() {
 
   const progressRef = useRef(0);
   const isMobileScrubRef = useRef(false);
+  const mobilePlayingRoomRef = useRef<number | null>(null);
   const videoModeRef = useRef<"tour" | "rooms" | "hero" | "detecting">(
     "detecting",
   );
@@ -183,15 +184,18 @@ export function ScrollTour() {
       const mobileQuery = window.matchMedia(
         "(max-width: 767px), (pointer: coarse)",
       );
-      setIsMobileScrub(mobileQuery.matches);
+      const mobileAutoplay = mobileQuery.matches;
+      setIsMobileScrub(mobileAutoplay);
 
-      try {
-        if ((await fetch(TOUR_VIDEO, { method: "HEAD" })).ok) {
-          setVideoMode("tour");
-          return;
+      if (!mobileAutoplay) {
+        try {
+          if ((await fetch(TOUR_VIDEO, { method: "HEAD" })).ok) {
+            setVideoMode("tour");
+            return;
+          }
+        } catch {
+          /* fall through */
         }
-      } catch {
-        /* fall through */
       }
 
       const available = await Promise.all(
@@ -241,7 +245,8 @@ export function ScrollTour() {
 
   const markClipReady = useCallback((index: number) => {
     const el = clipRefs.current[index];
-    if (el && Number.isFinite(el.duration)) {
+    const wasReady = clipsReadyRef.current[index];
+    if (!wasReady && el && Number.isFinite(el.duration)) {
       const room = TOUR_ROOMS[index];
       const start = scrubTimeFromLocal(0, el.duration, room?.clipScrub);
       scrubVideoTo(el, start);
@@ -253,6 +258,37 @@ export function ScrollTour() {
       clipsReadyRef.current = next;
       return next;
     });
+  }, []);
+
+  const syncMobilePlayback = useCallback((roomIdx: number) => {
+    if (mobilePlayingRoomRef.current !== roomIdx) {
+      mobilePlayingRoomRef.current = roomIdx;
+      clipRefs.current.forEach((video, i) => {
+        if (!video) return;
+        if (i !== roomIdx) {
+          video.pause();
+          return;
+        }
+        if (Number.isFinite(video.duration)) {
+          try {
+            video.currentTime = 0;
+          } catch {
+            /* iOS may reject seeks before decode is ready */
+          }
+        }
+      });
+    }
+
+    const active = clipRefs.current[roomIdx];
+    if (!active || !clipAvailableRef.current[roomIdx]) return;
+    active.muted = true;
+    active.playsInline = true;
+    active.loop = true;
+    if (active.paused) {
+      active.play().catch(() => {
+        /* muted inline autoplay can still be delayed until the browser is ready */
+      });
+    }
   }, []);
 
   const syncOverlay = useCallback((p: number) => {
@@ -300,6 +336,12 @@ export function ScrollTour() {
     const mode = videoModeRef.current;
 
     if (mode === "detecting") return;
+
+    if (isMobileScrubRef.current && mode === "rooms") {
+      const roomIdx = Math.min(ROOM_COUNT - 1, Math.floor(p * ROOM_COUNT));
+      syncMobilePlayback(roomIdx);
+      return;
+    }
 
     if (mode === "tour" || mode === "hero") {
       const video = tourVideoRef.current;
@@ -356,7 +398,7 @@ export function ScrollTour() {
 
       scrubVideoTo(video, time);
     }
-  }, []);
+  }, [syncMobilePlayback]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -401,7 +443,7 @@ export function ScrollTour() {
       cleanups.push(bindScrubVideo(video));
     });
     return () => cleanups.forEach((fn) => fn());
-  }, [videoMode, clipAvailable, clipsReady]);
+  }, [videoMode, clipAvailable]);
 
   const anyClipAvailable = clipAvailable.some(Boolean);
   /** CSS placeholders only when no mp4s exist — never overlay real clips. */
@@ -457,6 +499,8 @@ export function ScrollTour() {
                   poster={room.poster ?? HERO_POSTER}
                   muted
                   playsInline
+                  autoPlay={isMobileScrub && i === activeRoom}
+                  loop={isMobileScrub}
                   preload={
                     isMobileScrub && i > activeRoom + 1 ? "metadata" : "auto"
                   }
