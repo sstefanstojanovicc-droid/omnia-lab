@@ -1,0 +1,12 @@
+{
+  "id": "91102daa-9b93-4db4-a056-fa90fbe79d9b",
+  "job_set_type": "seedance_2_0",
+  "continues_from": "f4dc7b4e-1803-4a2a-8a51-54bcc0e9fe30",
+  "start_image": "public/video/room-04-endframe.jpg",
+  "result_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3CDAwEwtHtjj9Oc1jAn2BnvN8Px/hf_20260518_122321_91102daa-9b93-4db4-a056-fa90fbe79d9b.mp4",
+  "local_path": "public/video/room-05.mp4",
+  "credits": 72,
+  "duration_s": 8,
+  "prompt": "Continuing from prior frame. Same contemporary minimalist villa, fully built. Charcoal stone and glass facade, completed landscape and gravel court, soft daylight, slow stabilized dolly back showing full massing, professional architectural visualization, neutral documentary grade, no people, no text.",
+  "note": "First attempt (366ff925) NSFW-flagged with dusk/amber prompt; daylight minimal prompt succeeded."
+}

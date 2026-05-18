@@ -230,7 +230,7 @@ export function ScrollTour() {
       if (!video || !Number.isFinite(video.duration)) continue;
 
       const opacity = roomVisualOpacity(p, i);
-      const pair = handoffPairForRoom(i);
+      const pair = activeHandoffAt(p, i, DISSOLVE_HANDOFFS, ROOM_COUNT);
       const isHandoffClip = pair !== null;
       if (!handoff && opacity < 0.02) continue;
       if (handoff && !isHandoffClip && opacity < 0.02) continue;
@@ -243,7 +243,7 @@ export function ScrollTour() {
         pair !== null && isInHandoffBlend(p, pair.from, ROOM_COUNT);
 
       if (pair && i === pair.from) {
-        if (inBlend || local > 0.92) local = 1;
+        if (inBlend || local > 0.88) local = 1;
         time = scrubTimeFromLocal(local, video.duration, room?.clipScrub);
         if (i === STRUCTURE_ROOM_INDEX && (inBlend || local >= 0.98)) {
           time = Math.min(
@@ -255,18 +255,13 @@ export function ScrollTour() {
         }
       } else if (pair && i === pair.to) {
         if (inBlend) {
-          const introMax =
-            i === ENVELOPE_ROOM_INDEX
-              ? 0.42
-              : i === APPROACH_ROOM_INDEX
-                ? 0.38
-                : 0.4;
+          const introMax = i === ENVELOPE_ROOM_INDEX ? 0.42 : 0.35;
           local = handoffDissolveLocal(p, pair.from, ROOM_COUNT, introMax);
-        } else if (local < 0.06) {
+        } else if (local < 0.08) {
           local = 0;
         }
         time = scrubTimeFromLocal(local, video.duration, room?.clipScrub);
-        if (!inBlend && local <= 0.02) {
+        if (!inBlend && local <= 0.03) {
           time = 0;
         }
       } else {
@@ -338,7 +333,17 @@ export function ScrollTour() {
     >
       <div className="sticky top-0 h-[100svh] min-h-[560px] w-full overflow-hidden">
         <div className="absolute inset-0 z-0 isolate">
-          <div className="hero-fallback absolute inset-0" aria-hidden />
+          <div
+            className="hero-fallback absolute inset-0 pointer-events-none transition-opacity duration-300"
+            style={{
+              opacity:
+                showBuildLayers ||
+                !(videoMode === "rooms" && clipAvailable.some(Boolean))
+                  ? 1
+                  : 0,
+            }}
+            aria-hidden
+          />
           {showBuildLayers ? (
             <ArchitectureBuildLayers ref={buildLayersRef} />
           ) : null}
@@ -368,14 +373,7 @@ export function ScrollTour() {
                   className="scroll-tour-video absolute inset-0 h-full w-full object-cover"
                   style={{
                     opacity: 0,
-                    zIndex:
-                      i === APPROACH_ROOM_INDEX
-                        ? 5
-                        : i === ENVELOPE_ROOM_INDEX || i === COMPLETE_ROOM_INDEX
-                          ? 4
-                          : i === STRUCTURE_ROOM_INDEX
-                            ? 3
-                            : i,
+                    zIndex: 10 + i,
                   }}
                   src={room.clip}
                   muted

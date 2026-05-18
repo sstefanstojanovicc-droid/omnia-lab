@@ -1,0 +1,12 @@
+{
+  "id": "63dcb746-c9fa-4d17-8bd3-c59026f64e91",
+  "job_set_type": "kling3_0",
+  "continues_from": "91102daa-9b93-4db4-a056-fa90fbe79d9b",
+  "start_image": "public/video/room-05-endframe.jpg",
+  "result_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3CDAwEwtHtjj9Oc1jAn2BnvN8Px/hf_20260518_130441_63dcb746-c9fa-4d17-8bd3-c59026f64e91.mp4",
+  "local_path": "public/video/room-06.mp4",
+  "credits": 16,
+  "duration_s": 8,
+  "prompt": "Continuing from reference image, identical completed minimalist villa. Slow forward dolly on gravel path toward facade, soft daylight, architectural documentary, no people, no text.",
+  "note": "Seedance NSFW on approach prompts; use scripts/generate-room-clip.sh for fallback chain. Kling 720p → 1080 upscale."
+}
