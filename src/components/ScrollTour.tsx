@@ -35,25 +35,51 @@ export type TourRoom = {
   headline?: string;
   body: string;
   clip?: string;
+  poster?: string;
   /** Limit which part of the mp4 is driven by scroll (post-trim or in-file range). */
   clipScrub?: ClipScrubRange;
   cta?: { label: string; href: string; primary?: boolean };
 };
 
-const TOUR_CLIPS: Pick<TourRoom, "id" | "clip" | "clipScrub" | "cta">[] = [
-  { id: "concept", clip: "/video/room-01.mp4" },
-  { id: "cad", clip: "/video/room-02.mp4" },
+const TOUR_CLIPS: Pick<
+  TourRoom,
+  "id" | "clip" | "poster" | "clipScrub" | "cta"
+>[] = [
+  {
+    id: "concept",
+    clip: "/video/room-01.mp4",
+    poster: "/video/room-01-endframe.jpg",
+  },
+  {
+    id: "cad",
+    clip: "/video/room-02.mp4",
+    poster: "/video/room-02-endframe.jpg",
+  },
   {
     id: "structure",
     clip: "/video/room-03.mp4",
+    poster: "/video/room-03-endframe.jpg",
     clipScrub: { in: 0.68, out: 0.945 },
   },
-  { id: "envelope", clip: "/video/room-04.mp4" },
-  { id: "complete", clip: "/video/room-05.mp4" },
-  { id: "approach", clip: "/video/room-06.mp4" },
+  {
+    id: "envelope",
+    clip: "/video/room-04.mp4",
+    poster: "/video/room-04-startframe.jpg",
+  },
+  {
+    id: "complete",
+    clip: "/video/room-05.mp4",
+    poster: "/video/room-05-startframe.jpg",
+  },
+  {
+    id: "approach",
+    clip: "/video/room-06.mp4",
+    poster: "/video/room-06-endframe.jpg",
+  },
   {
     id: "arrival",
     clip: "/video/room-07.mp4",
+    poster: "/video/room-06-endframe.jpg",
     cta: { label: "View work", href: "#work", primary: true },
   },
 ];
@@ -115,6 +141,7 @@ export function ScrollTour() {
   const buildLayersRef = useRef<ArchitectureBuildLayersHandle>(null);
 
   const progressRef = useRef(0);
+  const isMobileScrubRef = useRef(false);
   const videoModeRef = useRef<"tour" | "rooms" | "hero" | "detecting">(
     "detecting",
   );
@@ -130,7 +157,7 @@ export function ScrollTour() {
   const [clipsReady, setClipsReady] = useState<boolean[]>(() =>
     Array(ROOM_COUNT).fill(false),
   );
-  const [useMobileHero, setUseMobileHero] = useState(false);
+  const [isMobileScrub, setIsMobileScrub] = useState(false);
   const [activeRoom, setActiveRoom] = useState(0);
   /** UI-only snapshot; scroll loop does not call setState per frame */
   const [progressUi, setProgressUi] = useState(0);
@@ -138,6 +165,10 @@ export function ScrollTour() {
   useEffect(() => {
     videoModeRef.current = videoMode;
   }, [videoMode]);
+
+  useEffect(() => {
+    isMobileScrubRef.current = isMobileScrub;
+  }, [isMobileScrub]);
 
   useEffect(() => {
     clipsReadyRef.current = clipsReady;
@@ -149,15 +180,10 @@ export function ScrollTour() {
 
   useEffect(() => {
     const detect = async () => {
-      const preferMobileHero = window.matchMedia(
+      const mobileQuery = window.matchMedia(
         "(max-width: 767px), (pointer: coarse)",
-      ).matches;
-      setUseMobileHero(preferMobileHero);
-
-      if (preferMobileHero) {
-        setVideoMode("hero");
-        return;
-      }
+      );
+      setIsMobileScrub(mobileQuery.matches);
 
       try {
         if ((await fetch(TOUR_VIDEO, { method: "HEAD" })).ok) {
@@ -213,6 +239,22 @@ export function ScrollTour() {
     return () => video.removeEventListener("loadeddata", signal);
   }, [videoMode]);
 
+  const markClipReady = useCallback((index: number) => {
+    const el = clipRefs.current[index];
+    if (el && Number.isFinite(el.duration)) {
+      const room = TOUR_ROOMS[index];
+      const start = scrubTimeFromLocal(0, el.duration, room?.clipScrub);
+      scrubVideoTo(el, start);
+    }
+    setClipsReady((prev) => {
+      if (prev[index]) return prev;
+      const next = [...prev];
+      next[index] = true;
+      clipsReadyRef.current = next;
+      return next;
+    });
+  }, []);
+
   const syncOverlay = useCallback((p: number) => {
     progressRef.current = p;
     if (progressBarRef.current) {
@@ -230,7 +272,12 @@ export function ScrollTour() {
     );
 
     for (let i = 0; i < ROOM_COUNT; i++) {
-      const opacity = roomVisualOpacity(p, i);
+      const opacity =
+        isMobileScrubRef.current && mode === "rooms"
+          ? roomIdx === i
+            ? 1
+            : 0
+          : roomVisualOpacity(p, i);
       const copy = copyRefs.current[i];
       if (copy) {
         copy.style.opacity = String(opacity);
@@ -357,11 +404,9 @@ export function ScrollTour() {
   }, [videoMode, clipAvailable, clipsReady]);
 
   const anyClipAvailable = clipAvailable.some(Boolean);
-  /** CSS placeholders only when no room mp4s exist — never overlay real clips (caused prod “glitch”). */
+  /** CSS placeholders only when no mp4s exist — never overlay real clips. */
   const showBuildLayers =
-    videoMode === "hero" ||
-    useMobileHero ||
-    (videoMode === "rooms" && !anyClipAvailable);
+    videoMode === "hero" || (videoMode === "rooms" && !anyClipAvailable);
 
   return (
     <section
@@ -374,13 +419,6 @@ export function ScrollTour() {
         <div className="absolute inset-0 z-0 isolate">
           <div
             className="hero-fallback absolute inset-0 pointer-events-none transition-opacity duration-300"
-            style={{
-              opacity:
-                showBuildLayers ||
-                !(videoMode === "rooms" && clipAvailable.some(Boolean))
-                  ? 1
-                  : 0,
-            }}
             aria-hidden
           />
           {showBuildLayers ? (
@@ -416,28 +454,16 @@ export function ScrollTour() {
                     zIndex: 10 + i,
                   }}
                   src={room.clip}
+                  poster={room.poster ?? HERO_POSTER}
                   muted
                   playsInline
-                  preload="auto"
+                  preload={
+                    isMobileScrub && i > activeRoom + 1 ? "metadata" : "auto"
+                  }
                   aria-hidden
-                  onLoadedData={() => {
-                    const el = clipRefs.current[i];
-                    if (el && Number.isFinite(el.duration)) {
-                      const room = TOUR_ROOMS[i];
-                      const start = scrubTimeFromLocal(
-                        0,
-                        el.duration,
-                        room?.clipScrub,
-                      );
-                      scrubVideoTo(el, start);
-                    }
-                    setClipsReady((prev) => {
-                      const next = [...prev];
-                      next[i] = true;
-                      clipsReadyRef.current = next;
-                      return next;
-                    });
-                  }}
+                  onLoadedMetadata={() => markClipReady(i)}
+                  onLoadedData={() => markClipReady(i)}
+                  onCanPlay={() => markClipReady(i)}
                   onError={() => {
                     setClipAvailable((prev) => {
                       const next = [...prev];
@@ -488,7 +514,12 @@ export function ScrollTour() {
 
           <div className="relative mt-auto min-h-[min(48svh,260px)] flex-1 md:min-h-[260px]">
             {TOUR_ROOMS.map((room, i) => {
-              const opacity = roomVisualOpacity(progressUi, i);
+              const opacity =
+                isMobileScrub && videoMode === "rooms"
+                  ? activeRoom === i
+                    ? 1
+                    : 0
+                  : roomVisualOpacity(progressUi, i);
               return (
                 <div
                   key={room.id}
