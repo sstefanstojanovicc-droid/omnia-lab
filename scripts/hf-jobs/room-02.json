@@ -1,0 +1,11 @@
+{
+  "id": "e1a79504-18e6-48be-938b-046a7ae058e8",
+  "job_set_type": "seedance_2_0",
+  "continues_from": "379cd3b4-e224-4e51-9489-38662e474088",
+  "start_image": "public/video/room-01-endframe.jpg",
+  "result_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3CDAwEwtHtjj9Oc1jAn2BnvN8Px/hf_20260518_112129_e1a79504-18e6-48be-938b-046a7ae058e8.mp4",
+  "local_path": "public/video/room-02.mp4",
+  "credits": 72,
+  "duration_s": 8,
+  "prompt": "Continuing seamlessly from the prior frame on the drafting table: the hand-drawn minimalist villa elevation and plan sketches on deep blue paper gently morph into a luminous cyan BIM wireframe of the exact same building — identical flat roof line, same rectangular footprint, same window bay rhythm and cantilever as the pencil drawing. Slow stabilized orbit around the 3D model on black, structural grid and slab edges visible, pencil lines dissolving into glowing teal wireframe, technical architecture visualization, shallow depth of field, fine film grain, no people, no text."
+}

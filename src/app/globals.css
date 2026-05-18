@@ -1,26 +1,263 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --paper: #f7f5f0;
+  --ink: #0a0a0a;
+  --ink-muted: #5c5c5c;
+  --smoke: #1a1a1a;
+  --line: rgba(10, 10, 10, 0.12);
+  --line-dark: rgba(247, 245, 240, 0.14);
+  --accent: #c45c26;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-smoke: var(--smoke);
+  --color-line: var(--line);
+  --color-line-dark: var(--line-dark);
+  --color-accent: var(--accent);
+  --font-display: var(--font-syne);
+  --font-mono: var(--font-plex-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-syne), system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+.font-display {
+  font-family: var(--font-syne), system-ui, sans-serif;
+}
+
+.font-mono {
+  font-family: var(--font-plex-mono), ui-monospace, monospace;
+}
+
+::selection {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.grain {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  opacity: 0.045;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.blur-word {
+  filter: blur(0.4px);
+  text-shadow:
+    0 0 28px rgba(10, 10, 10, 0.35),
+    0 0 2px rgba(10, 10, 10, 0.5);
+}
+
+.hero-fallback {
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 80%, rgba(196, 92, 38, 0.15), transparent),
+    radial-gradient(ellipse 70% 50% at 80% 20%, rgba(255, 255, 255, 0.06), transparent),
+    linear-gradient(165deg, #0a0a0a 0%, #1c1c1c 40%, #0d0d0d 100%);
+  animation: hero-drift 18s ease-in-out infinite alternate;
+}
+
+@keyframes hero-drift {
+  0% {
+    filter: brightness(0.92) contrast(1.05);
+    transform: scale(1.02);
+  }
+  100% {
+    filter: brightness(1) contrast(1.1);
+    transform: scale(1.06);
+  }
+}
+
+/* Scroll-scrubbed hero videos — GPU layer, no CSS opacity transitions */
+.scroll-tour-video {
+  will-change: opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Scroll-tour architecture phases (preview until tour.mp4 exists) */
+.arch-build-layer {
+  position: absolute;
+  inset: 0;
+  transition: opacity 0.2s ease-out;
+  background-repeat: no-repeat;
+  background-position: center 62%;
+  background-size: min(92vw, 720px) auto;
+}
+
+.phase-blueprint {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(180deg, transparent 38%, rgba(10, 30, 55, 0.85) 100%);
+  background-size:
+    28px 28px,
+    28px 28px,
+    100% 100%;
+  mask-image: linear-gradient(180deg, black 20%, transparent 95%);
+}
+
+.phase-blueprint::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 22%;
+  width: min(58vw, 420px);
+  height: min(42vh, 280px);
+  transform: translateX(-50%);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+    12px -8px 0 -1px rgba(255, 255, 255, 0.12);
+}
+
+.phase-cad {
+  background-image: radial-gradient(circle at 50% 68%, rgba(0, 180, 220, 0.12), transparent 55%);
+}
+
+.phase-cad::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 22%;
+  width: min(58vw, 420px);
+  height: min(42vh, 280px);
+  transform: translateX(-50%);
+  background:
+    linear-gradient(rgba(0, 200, 255, 0.5) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 200, 255, 0.5) 1px, transparent 1px);
+  background-size: 18px 18px;
+  border: 1px solid rgba(0, 220, 255, 0.45);
+  opacity: 0.85;
+}
+
+.phase-structure {
+  background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+}
+
+.phase-structure::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 18%;
+  width: min(62vw, 460px);
+  height: min(46vh, 300px);
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, #6b6b6b 0%, #3d3d3d 45%, #2a2a2a 100%);
+  clip-path: polygon(8% 100%, 0 55%, 12% 20%, 35% 0, 65% 0, 88% 20%, 100% 55%, 92% 100%);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
+}
+
+.phase-envelope::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 18%;
+  width: min(62vw, 460px);
+  height: min(46vh, 300px);
+  transform: translateX(-50%);
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(180, 210, 230, 0.35) 0,
+      rgba(180, 210, 230, 0.35) 8px,
+      rgba(40, 45, 50, 0.9) 8px,
+      rgba(40, 45, 50, 0.9) 22px
+    ),
+    linear-gradient(180deg, #5a5a5a 0%, #333 100%);
+  clip-path: polygon(8% 100%, 0 55%, 12% 20%, 35% 0, 65% 0, 88% 20%, 100% 55%, 92% 100%);
+}
+
+.phase-complete::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 16%;
+  width: min(64vw, 480px);
+  height: min(48vh, 320px);
+  transform: translateX(-50%);
+  background: linear-gradient(145deg, #4a4a48 0%, #1e1e1c 60%, #0a0a0a 100%);
+  clip-path: polygon(6% 100%, 0 52%, 10% 18%, 32% 0, 68% 0, 90% 18%, 100% 52%, 94% 100%);
+  box-shadow:
+    0 0 120px rgba(196, 92, 38, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.phase-approach {
+  background: radial-gradient(ellipse 90% 70% at 50% 75%, rgba(196, 92, 38, 0.18), transparent);
+}
+
+.phase-interior {
+  background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(255, 255, 255, 0.08), transparent 70%);
+}
+
+.phase-interior::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.65) 0%,
+    transparent 22%,
+    transparent 78%,
+    rgba(0, 0, 0, 0.65) 100%
+  );
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arch-build-layer {
+    transition: none;
+  }
+  .hero-fallback {
+    animation: none;
+  }
+}
+
+@keyframes line-draw {
+  from {
+    stroke-dashoffset: 120;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.marquee-track {
+  animation: marquee 32s linear infinite;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.work-card img {
+  transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.work-card:hover img {
+  transform: scale(1.04);
 }
