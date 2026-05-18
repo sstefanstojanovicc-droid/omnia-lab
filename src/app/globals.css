@@ -69,9 +69,14 @@ body {
 
 .hero-fallback {
   background:
-    radial-gradient(ellipse 80% 60% at 20% 80%, rgba(196, 92, 38, 0.15), transparent),
-    radial-gradient(ellipse 70% 50% at 80% 20%, rgba(255, 255, 255, 0.06), transparent),
+    radial-gradient(ellipse 80% 60% at 20% 80%, rgba(196, 92, 38, 0.22), transparent),
+    radial-gradient(ellipse 70% 50% at 80% 20%, rgba(255, 255, 255, 0.12), transparent),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0.24)),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.42)),
+    url("/video/room-01-endframe.jpg"),
     linear-gradient(165deg, #0a0a0a 0%, #1c1c1c 40%, #0d0d0d 100%);
+  background-position: center;
+  background-size: cover;
   animation: hero-drift 18s ease-in-out infinite alternate;
 }
 

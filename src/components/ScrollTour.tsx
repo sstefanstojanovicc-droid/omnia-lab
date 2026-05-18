@@ -26,6 +26,7 @@ import {
 /** One stitched scroll-scrub file (best). See scripts/generate-scroll-tour-higgsfield.md */
 const TOUR_VIDEO = "/video/tour.mp4";
 const FALLBACK_VIDEO = "/video/hero.mp4";
+const HERO_POSTER = "/video/room-01-endframe.jpg";
 
 export type TourRoom = {
   id: string;
@@ -129,6 +130,7 @@ export function ScrollTour() {
   const [clipsReady, setClipsReady] = useState<boolean[]>(() =>
     Array(ROOM_COUNT).fill(false),
   );
+  const [useMobileHero, setUseMobileHero] = useState(false);
   const [activeRoom, setActiveRoom] = useState(0);
   /** UI-only snapshot; scroll loop does not call setState per frame */
   const [progressUi, setProgressUi] = useState(0);
@@ -147,6 +149,16 @@ export function ScrollTour() {
 
   useEffect(() => {
     const detect = async () => {
+      const preferMobileHero = window.matchMedia(
+        "(max-width: 767px), (pointer: coarse)",
+      ).matches;
+      setUseMobileHero(preferMobileHero);
+
+      if (preferMobileHero) {
+        setVideoMode("hero");
+        return;
+      }
+
       try {
         if ((await fetch(TOUR_VIDEO, { method: "HEAD" })).ok) {
           setVideoMode("tour");
@@ -347,7 +359,9 @@ export function ScrollTour() {
   const anyClipAvailable = clipAvailable.some(Boolean);
   /** CSS placeholders only when no room mp4s exist — never overlay real clips (caused prod “glitch”). */
   const showBuildLayers =
-    videoMode === "hero" || (videoMode === "rooms" && !anyClipAvailable);
+    videoMode === "hero" ||
+    useMobileHero ||
+    (videoMode === "rooms" && !anyClipAvailable);
 
   return (
     <section
@@ -379,6 +393,7 @@ export function ScrollTour() {
               className="scroll-tour-video absolute inset-0 h-full w-full object-cover"
               muted
               playsInline
+              poster={HERO_POSTER}
               preload="auto"
               aria-hidden
             >
