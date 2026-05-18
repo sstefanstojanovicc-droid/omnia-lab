@@ -12,7 +12,7 @@ git remote get-url origin &>/dev/null || exit 0
 
 STATE_DIR="${TMPDIR:-/tmp}/omnia-lab-auto-sync"
 mkdir -p "$STATE_DIR"
-LOCK_FILE="$STATE_DIR/lock"
+LOCK_FILE="$STATE_DIR/lock.dir"
 TIMER_PID_FILE="$STATE_DIR/debounce.pid"
 LOG_FILE="$STATE_DIR/sync.log"
 
@@ -60,15 +60,10 @@ EOF
 }
 
 with_lock() {
-  if command -v flock >/dev/null 2>&1; then
-    flock -n "$LOCK_FILE" bash -c "$1"
-  else
-    # macOS fallback: mkdir lock
-    local lockdir="${LOCK_FILE}.dir"
-    if mkdir "$lockdir" 2>/dev/null; then
-      trap 'rmdir "$lockdir" 2>/dev/null || true' EXIT
-      eval "$1"
-    fi
+  local lockdir="${LOCK_FILE}.dir"
+  if mkdir "$lockdir" 2>/dev/null; then
+    trap 'rmdir "$lockdir" 2>/dev/null || true' EXIT
+    eval "$1"
   fi
 }
 
