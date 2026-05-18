@@ -1,4 +1,5 @@
 import { Contact } from "@/components/Contact";
+import { SiteLoader } from "@/components/SiteLoader";
 import { Definition } from "@/components/Definition";
 import { Footer } from "@/components/Footer";
 import { Grain } from "@/components/Grain";
@@ -12,6 +13,7 @@ import { Work } from "@/components/Work";
 export default function Home() {
   return (
     <>
+      <SiteLoader />
       <Grain />
       <Header />
       <main>

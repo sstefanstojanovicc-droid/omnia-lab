@@ -115,11 +115,15 @@ export function ScrollTour() {
   const buildLayersRef = useRef<ArchitectureBuildLayersHandle>(null);
 
   const progressRef = useRef(0);
-  const videoModeRef = useRef<"tour" | "rooms" | "hero">("hero");
+  const videoModeRef = useRef<"tour" | "rooms" | "hero" | "detecting">(
+    "detecting",
+  );
   const clipsReadyRef = useRef<boolean[]>(Array(ROOM_COUNT).fill(false));
   const clipAvailableRef = useRef<boolean[]>(Array(ROOM_COUNT).fill(false));
 
-  const [videoMode, setVideoMode] = useState<"tour" | "rooms" | "hero">("hero");
+  const [videoMode, setVideoMode] = useState<
+    "tour" | "rooms" | "hero" | "detecting"
+  >("detecting");
   const [clipAvailable, setClipAvailable] = useState<boolean[]>(() =>
     Array(ROOM_COUNT).fill(false),
   );
@@ -175,6 +179,29 @@ export function ScrollTour() {
     detect();
   }, []);
 
+  useEffect(() => {
+    if (videoMode === "detecting") return;
+
+    if (videoMode === "rooms") {
+      const first = clipAvailable.findIndex(Boolean);
+      if (first < 0) return;
+      if (!clipsReady[first]) return;
+    }
+
+    window.dispatchEvent(new CustomEvent("omnia-tour-ready"));
+  }, [videoMode, clipAvailable, clipsReady]);
+
+  useEffect(() => {
+    if (videoMode !== "tour") return;
+    const video = tourVideoRef.current;
+    if (!video) return;
+    const signal = () =>
+      window.dispatchEvent(new CustomEvent("omnia-tour-ready"));
+    video.addEventListener("loadeddata", signal);
+    if (video.readyState >= 2) signal();
+    return () => video.removeEventListener("loadeddata", signal);
+  }, [videoMode]);
+
   const syncOverlay = useCallback((p: number) => {
     progressRef.current = p;
     if (progressBarRef.current) {
@@ -213,6 +240,8 @@ export function ScrollTour() {
 
   const syncPlayback = useCallback((p: number) => {
     const mode = videoModeRef.current;
+
+    if (mode === "detecting") return;
 
     if (mode === "tour" || mode === "hero") {
       const video = tourVideoRef.current;
