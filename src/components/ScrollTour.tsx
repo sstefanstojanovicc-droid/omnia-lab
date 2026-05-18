@@ -11,7 +11,6 @@ import {
   HANDOFF_STRUCTURE_ENVELOPE,
   activeHandoffAt,
   bindScrubVideo,
-  handoffBlendWidth,
   handoffDissolveLocal,
   isInHandoffBlend,
   prepareScrubVideo,
