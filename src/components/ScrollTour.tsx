@@ -357,7 +357,7 @@ export function ScrollTour() {
       className="relative bg-smoke"
       style={{ height: `${SCROLL_VH}vh` }}
     >
-      <div className="sticky top-0 h-[100svh] min-h-[560px] w-full overflow-hidden">
+      <div className="sticky top-0 h-[100svh] min-h-[100svh] w-full overflow-hidden md:min-h-[560px]">
         <div className="absolute inset-0 z-0 isolate">
           <div
             className="hero-fallback absolute inset-0 pointer-events-none transition-opacity duration-300"
@@ -453,16 +453,16 @@ export function ScrollTour() {
           />
         </div>
 
-        <div className="relative z-10 flex h-full flex-col px-6 pb-16 pt-24 md:px-12 md:pb-20">
+        <div className="relative z-10 flex h-full flex-col px-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] pt-20 sm:px-6 sm:pb-12 sm:pt-24 md:px-12 md:pb-20">
           <div className="flex items-start justify-end">
-            <div className="flex flex-col items-end gap-2">
+            <div className="flex flex-col items-end gap-1.5 sm:gap-2">
               {TOUR_ROOMS.map((room, i) => (
                 <span
                   key={room.id}
                   ref={(el) => {
                     navRefs.current[i] = el;
                   }}
-                  className={`font-mono text-[9px] uppercase tracking-[0.35em] transition-colors duration-300 ${
+                  className={`font-mono text-[8px] uppercase tracking-[0.28em] transition-colors duration-300 sm:text-[9px] sm:tracking-[0.35em] ${
                     activeRoom === i ? "text-white" : "text-white/25"
                   }`}
                 >
@@ -472,7 +472,7 @@ export function ScrollTour() {
             </div>
           </div>
 
-          <div className="relative mt-auto min-h-[220px] flex-1 md:min-h-[260px]">
+          <div className="relative mt-auto min-h-[min(48svh,260px)] flex-1 md:min-h-[260px]">
             {TOUR_ROOMS.map((room, i) => {
               const opacity = roomVisualOpacity(progressUi, i);
               return (
@@ -481,28 +481,28 @@ export function ScrollTour() {
                   ref={(el) => {
                     copyRefs.current[i] = el;
                   }}
-                  className="pointer-events-none absolute inset-x-0 bottom-0 max-w-xl md:max-w-2xl"
+                  className="pointer-events-none absolute inset-x-0 bottom-0 max-w-[34rem] md:max-w-2xl"
                   style={{ opacity: 0, visibility: "hidden" }}
                 >
-                  <p className="font-mono text-[10px] uppercase tracking-[0.45em] text-white/50">
+                  <p className="font-mono text-[9px] uppercase tracking-[0.32em] text-white/50 sm:text-[10px] sm:tracking-[0.45em]">
                     {i === 0 ? site.direction : `${room.index} — ${room.title}`}
                   </p>
-                  <h1 className="mt-4 font-display text-[clamp(2.25rem,6vw,4.5rem)] font-semibold uppercase leading-[1.05] tracking-[-0.02em] text-white">
+                  <h1 className="mt-3 font-display text-[clamp(2rem,12vw,4.5rem)] font-semibold uppercase leading-[1.02] tracking-[-0.03em] text-white sm:mt-4 sm:leading-[1.05]">
                     {room.title}
                   </h1>
                   {room.headline ? (
-                    <p className="mt-2 font-display text-xl font-normal italic normal-case tracking-[0.02em] text-white/85 md:text-2xl">
+                    <p className="mt-2 font-display text-lg font-normal italic normal-case tracking-[0.02em] text-white/85 sm:text-xl md:text-2xl">
                       {room.headline}
                     </p>
                   ) : null}
-                  <p className="mt-5 max-w-md font-mono text-[11px] uppercase leading-relaxed tracking-[0.16em] text-white/55">
+                  <p className="mt-4 max-w-md font-mono text-[10px] uppercase leading-[1.75] tracking-[0.12em] text-white/60 sm:mt-5 sm:text-[11px] sm:leading-relaxed sm:tracking-[0.16em]">
                     {room.body}
                   </p>
                   {room.cta && opacity > 0.5 ? (
-                    <div className="pointer-events-auto mt-8 flex flex-wrap gap-4">
+                    <div className="pointer-events-auto mt-6 grid w-full gap-3 sm:mt-8 sm:flex sm:flex-wrap sm:gap-4">
                       <Link
                         href={room.cta.href}
-                        className={`inline-flex min-w-[180px] items-center justify-center px-8 py-3.5 font-mono text-[11px] uppercase tracking-[0.22em] transition-colors ${
+                        className={`inline-flex min-h-12 w-full items-center justify-center px-5 py-3 font-mono text-[10px] uppercase tracking-[0.18em] transition-colors sm:min-w-[180px] sm:px-8 sm:py-3.5 sm:text-[11px] sm:tracking-[0.22em] ${
                           room.cta.primary
                             ? "border border-white bg-white text-ink hover:bg-transparent hover:text-white"
                             : "border border-white/40 text-white hover:border-white hover:bg-white/10"
@@ -512,7 +512,7 @@ export function ScrollTour() {
                       </Link>
                       <Link
                         href="#contact"
-                        className="inline-flex min-w-[180px] items-center justify-center border border-white/40 px-8 py-3.5 font-mono text-[11px] uppercase tracking-[0.22em] text-white transition-colors hover:border-white hover:bg-white/10"
+                        className="inline-flex min-h-12 w-full items-center justify-center border border-white/40 px-5 py-3 font-mono text-[10px] uppercase tracking-[0.18em] text-white transition-colors hover:border-white hover:bg-white/10 sm:min-w-[180px] sm:px-8 sm:py-3.5 sm:text-[11px] sm:tracking-[0.22em]"
                       >
                         Begin a project
                       </Link>
@@ -523,11 +523,11 @@ export function ScrollTour() {
             })}
           </div>
 
-          <div className="mt-8 flex items-center justify-between gap-6">
+          <div className="mt-6 flex items-center justify-between gap-4 sm:mt-8 sm:gap-6">
             <span className="font-mono text-[9px] uppercase tracking-[0.35em] text-white/40">
               Scroll
             </span>
-            <div className="h-px flex-1 max-w-[200px] overflow-hidden bg-white/15">
+            <div className="h-px max-w-[200px] flex-1 overflow-hidden bg-white/15">
               <div
                 ref={progressBarRef}
                 className="h-full bg-white/70"

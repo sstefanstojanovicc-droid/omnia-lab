@@ -5,10 +5,10 @@ export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-line bg-paper py-12">
-      <div className="mx-auto flex max-w-[1400px] flex-col gap-8 px-6 md:flex-row md:items-center md:justify-between md:px-10">
-        <Logo variant="dark" className="h-auto w-36 md:w-44" />
-        <nav className="flex flex-wrap gap-8 font-mono text-[10px] uppercase tracking-[0.2em] text-ink-muted">
+    <footer className="border-t border-line bg-paper py-10 sm:py-12">
+      <div className="mx-auto flex max-w-[1400px] flex-col gap-7 px-5 sm:px-6 md:flex-row md:items-center md:justify-between md:px-10">
+        <Logo variant="dark" className="h-auto w-32 sm:w-36 md:w-44" />
+        <nav className="grid grid-cols-2 gap-x-8 gap-y-4 font-mono text-[10px] uppercase tracking-[0.16em] text-ink-muted sm:flex sm:flex-wrap sm:gap-8 sm:tracking-[0.2em]">
           <Link href="#practice" className="hover:text-ink">
             Practice
           </Link>
@@ -27,7 +27,7 @@ export function Footer() {
             Instagram
           </a>
         </nav>
-        <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-muted">
+        <p className="font-mono text-[10px] uppercase leading-relaxed tracking-[0.16em] text-ink-muted sm:tracking-[0.2em]">
           © {year} OMNIA — Est. 2026
         </p>
       </div>
