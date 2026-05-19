@@ -1,0 +1,11 @@
+<footer class="omnia-footer" style="border-top:1px solid var(--line);background:var(--paper);padding:3rem 0;">
+  <div class="omnia-wrap" style="display:flex;flex-wrap:wrap;gap:2rem;align-items:center;justify-content:space-between;">
+    <span class="omnia-display" style="font-size:1.5rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;">{{ module.logo_text }}</span>
+    <nav style="display:flex;flex-wrap:wrap;gap:2rem;">
+      {% for link in module.footer_links %}
+        <a href="{{ link.href.href|default('#') }}" class="omnia-mono" style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--ink-muted);text-decoration:none;">{{ link.link_label }}</a>
+      {% endfor %}
+    </nav>
+    <p class="omnia-mono" style="margin:0;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--ink-muted);">{{ module.copyright }}</p>
+  </div>
+</footer>

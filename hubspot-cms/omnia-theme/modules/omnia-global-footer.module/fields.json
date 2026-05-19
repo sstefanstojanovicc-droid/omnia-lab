@@ -1,0 +1,21 @@
+[
+  { "id": "logo_text", "name": "logo_text", "label": "Logo text", "type": "text", "default": "OMNIA" },
+  { "id": "copyright", "name": "copyright", "label": "Copyright line", "type": "text", "default": "© 2026 OMNIA — Est. 2026" },
+  {
+    "id": "footer_links",
+    "name": "footer_links",
+    "label": "Footer links",
+    "type": "group",
+    "occurrence": { "min": 1, "max": 8, "default": 4 },
+    "children": [
+      { "id": "footer_links.link_label", "name": "link_label", "label": "Label", "type": "text", "default": "Practice" },
+      { "id": "footer_links.href", "name": "href", "label": "URL", "type": "url", "supported_types": ["EXTERNAL", "CONTENT"], "default": { "type": "EXTERNAL", "href": "#practice" } }
+    ],
+    "default": [
+      { "link_label": "Practice", "href": { "type": "EXTERNAL", "href": "#practice" } },
+      { "link_label": "Work", "href": { "type": "EXTERNAL", "href": "#work" } },
+      { "link_label": "Contact", "href": { "type": "EXTERNAL", "href": "#contact" } },
+      { "link_label": "Instagram", "href": { "type": "EXTERNAL", "href": "https://www.instagram.com/omnia___lab" } }
+    ]
+  }
+]

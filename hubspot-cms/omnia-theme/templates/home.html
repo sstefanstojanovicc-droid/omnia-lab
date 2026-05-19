@@ -1,0 +1,17 @@
+<!--
+  templateType: page
+  isAvailableForNewContent: true
+  label: OMNIA · Home
+-->
+{% extends "../layouts/base.html" %}
+{% block body %}
+  {% module "omnia_header" path="../modules/omnia-global-header.module", label="OMNIA: Header" %}
+  {% module "omnia_scroll" path="../modules/omnia-01-scroll-tour.module", label="OMNIA: 1 Scroll tour" %}
+  {% module "omnia_manifesto" path="../modules/omnia-02-manifesto.module", label="OMNIA: 2 Manifesto" %}
+  {% module "omnia_marquee" path="../modules/omnia-03-marquee.module", label="OMNIA: 3 Marquee" %}
+  {% module "omnia_practice" path="../modules/omnia-04-practice.module", label="OMNIA: 4 Practice" %}
+  {% module "omnia_work" path="../modules/omnia-05-work.module", label="OMNIA: 5 Work" %}
+  {% module "omnia_studio" path="../modules/omnia-06-studio.module", label="OMNIA: 6 Studio" %}
+  {% module "omnia_contact" path="../modules/omnia-07-contact.module", label="OMNIA: 7 Contact" %}
+  {% module "omnia_footer" path="../modules/omnia-global-footer.module", label="OMNIA: Footer" %}
+{% endblock body %}

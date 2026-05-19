@@ -1,0 +1,26 @@
+<!--
+  templateType: "none"
+  isAvailableForNewContent: false
+-->
+<!doctype html>
+<html lang="{{ html_lang }}">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ page_meta.html_title|default(content.name) }}</title>
+    <meta name="description" content="{{ page_meta.meta_description }}" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=Syne:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    {{ require_css(get_asset_url("../css/omnia-main.css")) }}
+    {{ standard_header_includes }}
+  </head>
+  <body class="omnia-theme">
+    <div class="omnia-grain" aria-hidden="true"></div>
+    {% block body %}{% endblock body %}
+    {{ standard_footer_includes }}
+  </body>
+</html>

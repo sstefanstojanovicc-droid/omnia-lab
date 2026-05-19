@@ -1,0 +1,23 @@
+[
+  { "id": "eyebrow", "name": "eyebrow", "label": "Eyebrow", "type": "text", "default": "Experiential Spatial Design" },
+  { "id": "section_title", "name": "section_title", "label": "Title", "type": "text", "default": "Immersive Narrative Environments" },
+  { "id": "tagline", "name": "tagline", "label": "Tagline", "type": "text", "default": "Spaces that choreograph emotion, perception, and collective experience." },
+  { "id": "description", "name": "description", "label": "Description", "type": "text", "default": "Narrative-led environments across culture, hospitality, entertainment, and public realm." },
+  {
+    "id": "pillars",
+    "name": "pillars",
+    "label": "Sector pillars",
+    "type": "group",
+    "occurrence": { "min": 1, "max": 8, "default": 4 },
+    "children": [
+      { "id": "pillars.index", "name": "index", "label": "Index", "type": "text", "default": "01" },
+      { "id": "pillars.pillar_title", "name": "pillar_title", "label": "Title", "type": "text", "default": "Culture" }
+    ],
+    "default": [
+      { "index": "01", "pillar_title": "Culture" },
+      { "index": "02", "pillar_title": "Hospitality" },
+      { "index": "03", "pillar_title": "Entertainment" },
+      { "index": "04", "pillar_title": "Public realm" }
+    ]
+  }
+]

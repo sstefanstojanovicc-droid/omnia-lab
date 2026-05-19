@@ -1,0 +1,241 @@
+[
+  {
+    "id": "direction_label",
+    "name": "direction_label",
+    "label": "Direction (first beat eyebrow)",
+    "type": "text",
+    "default": "Direction — Cinematic"
+  },
+  {
+    "id": "scroll_hint",
+    "name": "scroll_hint",
+    "label": "Scroll hint label",
+    "type": "text",
+    "default": "Scroll"
+  },
+  {
+    "id": "beats",
+    "name": "beats",
+    "label": "Scroll tour beats (order = scroll sequence)",
+    "type": "group",
+    "occurrence": {
+      "min": 1,
+      "max": 12,
+      "default": 7
+    },
+    "children": [
+      {
+        "id": "beats.beat_index",
+        "name": "beat_index",
+        "label": "Index",
+        "type": "text",
+        "default": "01"
+      },
+      {
+        "id": "beats.beat_title",
+        "name": "beat_title",
+        "label": "Title",
+        "type": "text",
+        "default": "Concept"
+      },
+      {
+        "id": "beats.beat_headline",
+        "name": "beat_headline",
+        "label": "Headline",
+        "type": "text",
+        "default": ""
+      },
+      {
+        "id": "beats.beat_body",
+        "name": "beat_body",
+        "label": "Body",
+        "type": "text",
+        "default": ""
+      },
+      {
+        "id": "beats.video_url",
+        "name": "video_url",
+        "label": "Room MP4 URL",
+        "type": "text",
+        "default": ""
+      },
+      {
+        "id": "beats.show_cta",
+        "name": "show_cta",
+        "label": "Show CTAs",
+        "type": "boolean",
+        "default": false
+      },
+      {
+        "id": "beats.cta_primary_label",
+        "name": "cta_primary_label",
+        "label": "Primary CTA",
+        "type": "text",
+        "default": "View work"
+      },
+      {
+        "id": "beats.cta_primary_href",
+        "name": "cta_primary_href",
+        "label": "Primary URL",
+        "type": "url",
+        "supported_types": [
+          "EXTERNAL",
+          "CONTENT"
+        ],
+        "default": {
+          "type": "EXTERNAL",
+          "href": "#work"
+        }
+      },
+      {
+        "id": "beats.cta_secondary_label",
+        "name": "cta_secondary_label",
+        "label": "Secondary CTA",
+        "type": "text",
+        "default": "Begin a project"
+      },
+      {
+        "id": "beats.cta_secondary_href",
+        "name": "cta_secondary_href",
+        "label": "Secondary URL",
+        "type": "url",
+        "supported_types": [
+          "EXTERNAL",
+          "CONTENT"
+        ],
+        "default": {
+          "type": "EXTERNAL",
+          "href": "#contact"
+        }
+      }
+    ],
+    "default": [
+      {
+        "beat_index": "01",
+        "beat_title": "Concept",
+        "beat_headline": "Planning & massing",
+        "beat_body": "Events, architecture, and immersive worlds shaped through narrative — intent translated into spatial form.",
+        "video_url": "https://omnia-lab.co/video/room-01.mp4",
+        "show_cta": false,
+        "cta_primary_label": "View work",
+        "cta_primary_href": {
+          "type": "EXTERNAL",
+          "href": "#work"
+        },
+        "cta_secondary_label": "Begin a project",
+        "cta_secondary_href": {
+          "type": "EXTERNAL",
+          "href": "#contact"
+        }
+      },
+      {
+        "beat_index": "02",
+        "beat_title": "CAD / BIM",
+        "beat_headline": "Technical design",
+        "beat_body": "Wireframe structure, sections, and coordinated systems — precision before ground breaks.",
+        "video_url": "https://omnia-lab.co/video/room-02.mp4",
+        "show_cta": false,
+        "cta_primary_label": "View work",
+        "cta_primary_href": {
+          "type": "EXTERNAL",
+          "href": "#work"
+        },
+        "cta_secondary_label": "Begin a project",
+        "cta_secondary_href": {
+          "type": "EXTERNAL",
+          "href": "#contact"
+        }
+      },
+      {
+        "beat_index": "03",
+        "beat_title": "Structure",
+        "beat_headline": "Concrete shell",
+        "beat_body": "Cast-in-place structure, slab edges, and raw tectonic volume — the frame before atmosphere arrives.",
+        "video_url": "https://omnia-lab.co/video/room-03.mp4",
+        "show_cta": false,
+        "cta_primary_label": "View work",
+        "cta_primary_href": {
+          "type": "EXTERNAL",
+          "href": "#work"
+        },
+        "cta_secondary_label": "Begin a project",
+        "cta_secondary_href": {
+          "type": "EXTERNAL",
+          "href": "#contact"
+        }
+      },
+      {
+        "beat_index": "04",
+        "beat_title": "Envelope",
+        "beat_headline": "Glazing & facade",
+        "beat_body": "Curtain wall, openings, and cladding — light and weather sealed, the skin of the narrative.",
+        "video_url": "https://omnia-lab.co/video/room-04.mp4",
+        "show_cta": false,
+        "cta_primary_label": "View work",
+        "cta_primary_href": {
+          "type": "EXTERNAL",
+          "href": "#work"
+        },
+        "cta_secondary_label": "Begin a project",
+        "cta_secondary_href": {
+          "type": "EXTERNAL",
+          "href": "#contact"
+        }
+      },
+      {
+        "beat_index": "05",
+        "beat_title": "Built form",
+        "beat_headline": "Exterior complete",
+        "beat_body": "Cinematic spaces for collective experience — landscape, material, and dusk light as a composed whole.",
+        "video_url": "https://omnia-lab.co/video/room-05.mp4",
+        "show_cta": false,
+        "cta_primary_label": "View work",
+        "cta_primary_href": {
+          "type": "EXTERNAL",
+          "href": "#work"
+        },
+        "cta_secondary_label": "Begin a project",
+        "cta_secondary_href": {
+          "type": "EXTERNAL",
+          "href": "#contact"
+        }
+      },
+      {
+        "beat_index": "06",
+        "beat_title": "Approach",
+        "beat_headline": "Cinematic arrival",
+        "beat_body": "Slow push toward the threshold — scale, anticipation, and the choreography of entry.",
+        "video_url": "https://omnia-lab.co/video/room-06.mp4",
+        "show_cta": false,
+        "cta_primary_label": "View work",
+        "cta_primary_href": {
+          "type": "EXTERNAL",
+          "href": "#work"
+        },
+        "cta_secondary_label": "Begin a project",
+        "cta_secondary_href": {
+          "type": "EXTERNAL",
+          "href": "#contact"
+        }
+      },
+      {
+        "beat_index": "07",
+        "beat_title": "Arrival",
+        "beat_headline": "Immersive interior",
+        "beat_body": "Spaces that choreograph emotion, perception, and collective experience — architecture revealed as lived atmosphere.",
+        "video_url": "https://omnia-lab.co/video/room-07.mp4",
+        "show_cta": true,
+        "cta_primary_label": "View work",
+        "cta_primary_href": {
+          "type": "EXTERNAL",
+          "href": "#work"
+        },
+        "cta_secondary_label": "Begin a project",
+        "cta_secondary_href": {
+          "type": "EXTERNAL",
+          "href": "#contact"
+        }
+      }
+    ]
+  }
+]

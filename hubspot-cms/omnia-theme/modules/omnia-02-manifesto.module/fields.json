@@ -1,0 +1,11 @@
+[
+  { "id": "eyebrow", "name": "eyebrow", "label": "Eyebrow", "type": "text", "default": "Manifesto" },
+  { "id": "heading", "name": "heading", "label": "Heading", "type": "text", "default": "Immersive Narrative Environments" },
+  {
+    "id": "manifesto_copy",
+    "name": "manifesto_copy",
+    "label": "Body",
+    "type": "text",
+    "default": "Studio practice exploring immersive environments shaped through narrative, atmosphere, and public experience — spaces conceived as emotional worlds — immersive, atmospheric, and collective."
+  }
+]

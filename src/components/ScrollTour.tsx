@@ -92,6 +92,8 @@ export const TOUR_ROOMS: TourRoom[] = site.tour.map((room) => {
 
 const ROOM_COUNT = TOUR_ROOMS.length;
 const SCROLL_VH = ROOM_COUNT * 100;
+const HAS_ROOM_CLIPS = TOUR_ROOMS.some((r) => Boolean(r.clip));
+const INITIAL_CLIP_AVAILABLE = TOUR_ROOMS.map((r) => Boolean(r.clip));
 const STRUCTURE_ROOM_INDEX = TOUR_ROOMS.findIndex((r) => r.id === "structure");
 const ENVELOPE_ROOM_INDEX = TOUR_ROOMS.findIndex((r) => r.id === "envelope");
 
@@ -145,16 +147,16 @@ export function ScrollTour() {
   const mobileAutoRoomRef = useRef(0);
   const mobilePlayingRoomRef = useRef<number | null>(null);
   const videoModeRef = useRef<"tour" | "rooms" | "hero" | "detecting">(
-    "detecting",
+    HAS_ROOM_CLIPS ? "rooms" : "detecting",
   );
   const clipsReadyRef = useRef<boolean[]>(Array(ROOM_COUNT).fill(false));
-  const clipAvailableRef = useRef<boolean[]>(Array(ROOM_COUNT).fill(false));
+  const clipAvailableRef = useRef<boolean[]>(INITIAL_CLIP_AVAILABLE);
 
   const [videoMode, setVideoMode] = useState<
     "tour" | "rooms" | "hero" | "detecting"
-  >("detecting");
-  const [clipAvailable, setClipAvailable] = useState<boolean[]>(() =>
-    Array(ROOM_COUNT).fill(false),
+  >(() => (HAS_ROOM_CLIPS ? "rooms" : "detecting"));
+  const [clipAvailable, setClipAvailable] = useState<boolean[]>(
+    () => INITIAL_CLIP_AVAILABLE,
   );
   const [clipsReady, setClipsReady] = useState<boolean[]>(() =>
     Array(ROOM_COUNT).fill(false),
@@ -193,17 +195,6 @@ export function ScrollTour() {
       const mobileAutoplay = mobileQuery.matches;
       setIsMobileScrub(mobileAutoplay);
 
-      if (!mobileAutoplay) {
-        try {
-          if ((await fetch(TOUR_VIDEO, { method: "HEAD" })).ok) {
-            setVideoMode("tour");
-            return;
-          }
-        } catch {
-          /* fall through */
-        }
-      }
-
       const available = await Promise.all(
         TOUR_ROOMS.map(async (room) => {
           if (!room.clip) return false;
@@ -221,6 +212,18 @@ export function ScrollTour() {
         setVideoMode("rooms");
         return;
       }
+
+      if (!mobileAutoplay) {
+        try {
+          if ((await fetch(TOUR_VIDEO, { method: "HEAD" })).ok) {
+            setVideoMode("tour");
+            return;
+          }
+        } catch {
+          /* fall through */
+        }
+      }
+
       setVideoMode("hero");
     };
     detect();
@@ -337,7 +340,6 @@ export function ScrollTour() {
     const mode = videoModeRef.current;
     const available = clipAvailableRef.current;
     const ready = clipsReadyRef.current;
-    const anyClipAvailable = available.some(Boolean);
     const displayRoomIdx =
       isMobileScrubRef.current && mode === "rooms"
         ? mobileAutoRoomRef.current
@@ -350,9 +352,7 @@ export function ScrollTour() {
       }
     }
 
-    buildLayersRef.current?.setProgress(
-      mode === "hero" || (mode === "rooms" && !anyClipAvailable) ? p : 0,
-    );
+    buildLayersRef.current?.setProgress(mode === "hero" ? p : 0);
 
     for (let i = 0; i < ROOM_COUNT; i++) {
       const opacity =
@@ -363,9 +363,11 @@ export function ScrollTour() {
           : roomVisualOpacity(p, i);
       const copy = copyRefs.current[i];
       if (copy) {
-        copy.style.opacity = String(opacity);
-        copy.style.visibility = opacity < 0.02 ? "hidden" : "visible";
-        copy.setAttribute("aria-hidden", opacity < 0.1 ? "true" : "false");
+        const copyOp =
+          i === 0 && !ready[i] && p < 0.08 ? 1 : opacity;
+        copy.style.opacity = String(copyOp);
+        copy.style.visibility = copyOp < 0.02 ? "hidden" : "visible";
+        copy.setAttribute("aria-hidden", copyOp < 0.1 ? "true" : "false");
       }
       const nav = navRefs.current[i];
       if (nav) {
@@ -373,8 +375,10 @@ export function ScrollTour() {
         nav.classList.toggle("text-white/25", displayRoomIdx !== i);
       }
       const video = clipRefs.current[i];
-      if (video && available[i] && ready[i]) {
-        video.style.opacity = String(opacity);
+      if (video && available[i]) {
+        const videoOp =
+          ready[i] ? opacity : i === 0 && p < 0.08 ? 1 : 0;
+        video.style.opacity = String(videoOp);
       }
     }
   }, []);
@@ -495,10 +499,14 @@ export function ScrollTour() {
     return () => cleanups.forEach((fn) => fn());
   }, [videoMode, clipAvailable]);
 
-  const anyClipAvailable = clipAvailable.some(Boolean);
-  /** CSS placeholders only when no mp4s exist — never overlay real clips. */
-  const showBuildLayers =
-    videoMode === "hero" || (videoMode === "rooms" && !anyClipAvailable);
+  const useRoomVideos =
+    videoMode === "rooms" || (videoMode === "detecting" && HAS_ROOM_CLIPS);
+  /** CSS blueprint preview only when room mp4s are confirmed missing — never before Concept loads. */
+  const showBuildLayers = videoMode === "hero";
+  const showHeroFallback =
+    videoMode === "hero" ||
+    videoMode === "tour" ||
+    (videoMode === "detecting" && !HAS_ROOM_CLIPS);
 
   return (
     <section
@@ -511,6 +519,9 @@ export function ScrollTour() {
         <div className="absolute inset-0 z-0 isolate">
           <div
             className="hero-fallback absolute inset-0 pointer-events-none transition-opacity duration-300"
+            style={{
+              opacity: showHeroFallback ? 1 : 0,
+            }}
             aria-hidden
           />
           {showBuildLayers ? (
@@ -532,9 +543,9 @@ export function ScrollTour() {
                 type="video/mp4"
               />
             </video>
-          ) : (
+          ) : useRoomVideos ? (
             TOUR_ROOMS.map((room, i) =>
-              clipAvailable[i] && room.clip ? (
+              room.clip && clipAvailable[i] !== false ? (
                 <video
                   key={room.id}
                   ref={(el) => {
@@ -542,7 +553,7 @@ export function ScrollTour() {
                   }}
                   className="scroll-tour-video absolute inset-0 h-full w-full object-cover"
                   style={{
-                    opacity: 0,
+                    opacity: i === 0 ? 1 : 0,
                     zIndex: 10 + i,
                   }}
                   src={room.clip}
@@ -554,8 +565,11 @@ export function ScrollTour() {
                   preload={
                     isMobileScrub && i > mobileAutoRoom + 1
                       ? "metadata"
-                      : "auto"
+                      : i === 0
+                        ? "auto"
+                        : "metadata"
                   }
+                  fetchPriority={i === 0 ? "high" : "low"}
                   aria-hidden
                   onLoadedMetadata={() => markClipReady(i)}
                   onLoadedData={() => markClipReady(i)}
@@ -587,7 +601,7 @@ export function ScrollTour() {
                 />
               ) : null,
             )
-          )}
+          ) : null}
 
           <div
             className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-black/25"
@@ -633,7 +647,10 @@ export function ScrollTour() {
                     copyRefs.current[i] = el;
                   }}
                   className="pointer-events-none absolute inset-x-0 bottom-0 max-w-[34rem] md:max-w-2xl"
-                  style={{ opacity: 0, visibility: "hidden" }}
+                  style={{
+                    opacity: i === 0 ? 1 : 0,
+                    visibility: i === 0 ? "visible" : "hidden",
+                  }}
                 >
                   <p className="font-mono text-[9px] uppercase tracking-[0.32em] text-white/50 sm:text-[10px] sm:tracking-[0.45em]">
                     {i === 0 ? site.direction : `${room.index} — ${room.title}`}

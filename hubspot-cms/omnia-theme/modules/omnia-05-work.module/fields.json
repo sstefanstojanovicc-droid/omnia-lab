@@ -1,0 +1,23 @@
+[
+  { "id": "eyebrow", "name": "eyebrow", "label": "Eyebrow", "type": "text", "default": "Work" },
+  { "id": "section_title", "name": "section_title", "label": "Title", "type": "text", "default": "Experiential Spatial Design" },
+  { "id": "description", "name": "description", "label": "Description", "type": "text", "default": "Narrative-led environments across culture, hospitality, entertainment, and public realm." },
+  {
+    "id": "projects",
+    "name": "projects",
+    "label": "Project cards",
+    "type": "group",
+    "occurrence": { "min": 1, "max": 8, "default": 4 },
+    "children": [
+      { "id": "projects.project_title", "name": "project_title", "label": "Title", "type": "text", "default": "Culture" },
+      { "id": "projects.image", "name": "image", "label": "Image", "type": "image", "default": { "src": "https://omnia-lab.co/assets/IMG_4865-2fec0a4f-3524-41b4-b336-1d3821bdb8f3.png", "alt": "Culture" } },
+      { "id": "projects.span_wide", "name": "span_wide", "label": "Wide layout (2 cols)", "type": "boolean", "default": false }
+    ],
+    "default": [
+      { "project_title": "Culture", "image": { "src": "https://omnia-lab.co/assets/IMG_4865-2fec0a4f-3524-41b4-b336-1d3821bdb8f3.png", "alt": "Culture" }, "span_wide": true },
+      { "project_title": "Hospitality", "image": { "src": "https://omnia-lab.co/assets/IMG_4866-8db29384-d39a-4f55-a8aa-adff5fef665b.png", "alt": "Hospitality" }, "span_wide": false },
+      { "project_title": "Entertainment", "image": { "src": "https://omnia-lab.co/assets/IMG_4867-83e34d2d-e5ce-42ec-ba29-5a2ab76883b7.png", "alt": "Entertainment" }, "span_wide": false },
+      { "project_title": "Public realm", "image": { "src": "https://omnia-lab.co/assets/IMG_4868-0aedb791-8f0a-4176-bb13-3e29074eb3a4.png", "alt": "Public realm" }, "span_wide": true }
+    ]
+  }
+]

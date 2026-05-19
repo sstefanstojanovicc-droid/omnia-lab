@@ -1,0 +1,21 @@
+<section id="practice" class="omnia-section" style="background:var(--smoke);color:var(--paper);padding:6rem 0;">
+  <div class="omnia-wrap">
+    <p class="omnia-eyebrow" style="color:rgba(247,245,240,0.5);">{{ module.eyebrow }}</p>
+    <h2 class="omnia-display" style="margin:1.5rem 0 0;max-width:48rem;font-size:clamp(2rem,5vw,3rem);font-weight:600;text-transform:uppercase;line-height:1.1;">{{ module.section_title }}</h2>
+    <p class="omnia-mono" style="margin:1.5rem 0 0;max-width:40rem;font-size:11px;line-height:1.9;letter-spacing:0.1em;text-transform:uppercase;color:rgba(247,245,240,0.6);">{{ module.tagline }}</p>
+    <p class="omnia-mono" style="margin:1rem 0 0;max-width:40rem;font-size:11px;line-height:1.9;letter-spacing:0.1em;text-transform:uppercase;color:rgba(247,245,240,0.55);">{{ module.description }}</p>
+    <div class="omnia-practice-grid" style="margin-top:5rem;display:grid;gap:1px;border:1px solid var(--line-dark);background:var(--line-dark);grid-template-columns:repeat(auto-fit,minmax(200px,1fr));">
+      {% for pillar in module.pillars %}
+        <article style="background:var(--smoke);padding:2.5rem;min-height:220px;display:flex;flex-direction:column;justify-content:space-between;">
+          <p class="omnia-mono" style="font-size:10px;letter-spacing:0.3em;color:var(--accent);margin:0;">{{ pillar.index }}</p>
+          <h3 class="omnia-display" style="margin:4rem 0 0;font-size:1.5rem;font-weight:700;text-transform:uppercase;">{{ pillar.pillar_title }}</h3>
+          <span style="display:block;height:1px;width:0;background:var(--accent);margin-top:2.5rem;transition:width 0.5s;" class="omnia-pillar-line"></span>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+<style>
+  .omnia-practice-grid article:hover .omnia-pillar-line { width: 100%; }
+  .omnia-practice-grid article:hover { background: #141414; }
+</style>

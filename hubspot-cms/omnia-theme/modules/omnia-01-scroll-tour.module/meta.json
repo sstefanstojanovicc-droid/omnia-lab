@@ -1,0 +1,8 @@
+{
+  "global": false,
+  "content_types": ["SITE_PAGE", "LANDING_PAGE"],
+  "smart_type": "NOT_SMART",
+  "host_template_types": ["PAGE"],
+  "label": "OMNIA: 1 Scroll tour",
+  "is_available_for_new_content": true
+}

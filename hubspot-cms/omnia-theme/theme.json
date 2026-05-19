@@ -1,0 +1,8 @@
+{
+  "label": "OMNIA Lab",
+  "preview_path": "./templates/home.html",
+  "enable_domain_stylesheets": false,
+  "author": {
+    "name": "OMNIA Lab"
+  }
+}

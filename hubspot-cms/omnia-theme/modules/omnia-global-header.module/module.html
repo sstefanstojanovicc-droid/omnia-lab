@@ -1,0 +1,115 @@
+<header class="omnia-header" data-omnia-header>
+  <div class="omnia-wrap omnia-header__inner">
+    <a href="/" class="omnia-header__logo">
+      {% if module.logo_image.src %}
+        <img src="{{ module.logo_image.src }}" alt="{{ module.logo_image.alt|default('OMNIA') }}" width="120" height="32" />
+      {% else %}
+        <span class="omnia-display omnia-header__wordmark">{{ module.logo_text }}</span>
+      {% endif %}
+    </a>
+    <nav class="omnia-header__nav" aria-label="Primary">
+      {% for item in module.nav_links %}
+        <a href="{{ item.link_href.href|default('#') }}">{{ item.link_label }}</a>
+      {% endfor %}
+    </nav>
+    <button type="button" class="omnia-header__toggle" aria-label="Open menu" aria-expanded="false" data-omnia-menu-toggle>
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+<div class="omnia-header__mobile" hidden data-omnia-mobile-nav>
+  <nav>
+    {% for item in module.nav_links %}
+      <a href="{{ item.link_href.href|default('#') }}">{{ item.link_label }}</a>
+    {% endfor %}
+  </nav>
+</div>
+
+<style>
+  .omnia-header {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 50;
+    transition: background 0.4s ease, border-color 0.4s ease, color 0.4s ease;
+  }
+  .omnia-header--light { color: #fff; }
+  .omnia-header--dark {
+    color: var(--ink);
+    background: rgba(247, 245, 240, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
+  .omnia-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 1.25rem;
+    padding-bottom: 1.25rem;
+  }
+  .omnia-header__wordmark {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+  }
+  .omnia-header__logo img { height: 2rem; width: auto; }
+  .omnia-header__nav {
+    display: none;
+    gap: 2.5rem;
+  }
+  .omnia-header__nav a {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    text-decoration: none;
+    opacity: 0.65;
+    transition: opacity 0.2s;
+  }
+  .omnia-header--light .omnia-header__nav a { color: #fff; }
+  .omnia-header--dark .omnia-header__nav a { color: var(--ink-muted); }
+  .omnia-header__nav a:hover { opacity: 1; }
+  .omnia-header__toggle {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: none;
+    border: 0;
+    padding: 0.5rem;
+    cursor: pointer;
+  }
+  .omnia-header__toggle span {
+    display: block;
+    width: 24px;
+    height: 1px;
+    background: currentColor;
+    transition: transform 0.3s;
+  }
+  .omnia-header__mobile {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    background: var(--paper);
+    display: flex;
+    align-items: center;
+    padding: 2.5rem;
+  }
+  .omnia-header__mobile nav {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  .omnia-header__mobile a {
+    font-family: "Syne", sans-serif;
+    font-size: 2.25rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--ink);
+  }
+  @media (min-width: 768px) {
+    .omnia-header__nav { display: flex; }
+    .omnia-header__toggle { display: none; }
+    .omnia-header__mobile { display: none !important; }
+  }
+</style>

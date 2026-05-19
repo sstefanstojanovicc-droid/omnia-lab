@@ -1,0 +1,33 @@
+<section id="contact" class="omnia-section omnia-section--paper" style="border-top:1px solid var(--line);padding:6rem 0;">
+  <div class="omnia-wrap">
+    <div style="display:grid;gap:4rem;grid-template-columns:1fr;">
+      <div>
+        <p class="omnia-eyebrow" style="color:var(--ink-muted);">{{ module.eyebrow }}</p>
+        <h2 class="omnia-display" style="margin:1.5rem 0 0;font-size:clamp(2rem,5vw,3rem);font-weight:600;text-transform:uppercase;">{{ module.section_title }}</h2>
+        <p class="omnia-mono" style="margin:1.5rem 0 0;max-width:28rem;font-size:11px;line-height:1.65;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-muted);">{{ module.description }}</p>
+        <div style="margin-top:2.5rem;">
+          <a href="mailto:{{ module.email }}" class="omnia-mono" style="display:block;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--ink);text-decoration:none;">{{ module.email }}</a>
+          <p class="omnia-mono" style="margin-top:0.75rem;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--ink-muted);">{{ module.location }}</p>
+        </div>
+      </div>
+      <div>
+        {% if module.form.form_id %}
+          {% form
+            form_to_use="{{ module.form.form_id }}"
+            response_type="{{ module.form.response_type }}"
+            response_message="{{ module.form.message }}"
+          %}
+        {% else %}
+          <p class="omnia-mono" style="font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--ink-muted);border:1px solid var(--line);padding:2.5rem;">
+            Select a HubSpot form in the module settings, or create one under Marketing → Forms.
+          </p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+<style>
+  @media (min-width: 1024px) {
+    #contact .omnia-wrap > div { grid-template-columns: 1fr 1fr !important; }
+  }
+</style>

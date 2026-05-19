@@ -1,0 +1,27 @@
+---
+description: Mandatory last-frame→first-frame continuity for scroll-scrub and multi-clip hero videos
+globs: public/video/**,src/components/ScrollTour.tsx,src/lib/scrollScrub.ts,scripts/**/*video*,scripts/generate-scroll-tour*,scripts/generate-room-clip.sh,scripts/scrub-encode*,scripts/stitch*,scripts/trim*,scripts/hf-jobs/**
+alwaysApply: false
+---
+
+# Scroll-scrub video continuity
+
+When adding or editing **scroll-scrub**, **scroll tour**, or **multi-clip hero** video for this site:
+
+## MUST
+
+1. **Match every join:** last frame of clip N = first frame of clip N+1. Use previous `room-{NN}-endframe.jpg` as Higgsfield `start_image` for clip N+1.
+2. **Trim** each clip so exports start/end on matched frames (SSIM or frame compare when AI drift occurs)—do not rely on CSS crossfade alone.
+3. **Scrub-encode** every clip: `./scripts/scrub-encode-video.sh public/video/room-XX.mp4`
+4. **Stitch** production asset: `./scripts/stitch-tour.sh` → `public/video/tour.mp4`
+5. Read and follow `.cursor/skills/scroll-scrub-video-continuity/SKILL.md` for the full pipeline.
+
+## MUST NOT
+
+- Ship production with only split `room-*.mp4` and opacity dissolves when `tour.mp4` can be built.
+- Generate clip N+1 without the previous clip’s end frame as reference.
+- Skip continuity on any adjacent pair (only structure→envelope is not enough).
+
+## Verify
+
+Run `./scripts/validate-tour-continuity.sh` before deploy. Scrub in browser through every segment boundary—no flash, jump, or visible cut.

@@ -1,0 +1,21 @@
+[
+  {
+    "id": "words",
+    "name": "words",
+    "label": "Marquee words",
+    "type": "group",
+    "occurrence": { "min": 2, "max": 20, "default": 7 },
+    "children": [
+      { "id": "words.word", "name": "word", "label": "Word", "type": "text", "default": "CINEMATIC" }
+    ],
+    "default": [
+      { "word": "CINEMATIC" },
+      { "word": "IMMERSIVE" },
+      { "word": "NARRATIVE" },
+      { "word": "SPATIAL" },
+      { "word": "EXPERIENTIAL" },
+      { "word": "COLLECTIVE" },
+      { "word": "ATMOSPHERE" }
+    ]
+  }
+]

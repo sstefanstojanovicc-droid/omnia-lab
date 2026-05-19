@@ -1,0 +1,35 @@
+<!--
+  templateType: page
+  isAvailableForNewContent: true
+  label: OMNIA Lab — embed (test)
+  screenshotPath: ""
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% if content.html_title %}{{ content.html_title }}{% else %}OMNIA Lab{% endif %}</title>
+    {% if content.meta_description %}
+      <meta name="description" content="{{ content.meta_description }}" />
+    {% endif %}
+    {{ standard_header_includes }}
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+        background: #000;
+      }
+    </style>
+  </head>
+  <body>
+    {% module "omnia_embed"
+      path="../modules/omnia-site-embed.module",
+      label="OMNIA live site embed"
+    %}
+    {{ standard_footer_includes }}
+  </body>
+</html>

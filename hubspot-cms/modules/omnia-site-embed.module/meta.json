@@ -1,0 +1,11 @@
+{
+  "label": "OMNIA — Live site embed",
+  "css_assets": [],
+  "external_js": [],
+  "global": false,
+  "host_template_types": ["PAGE"],
+  "icon": "https://cdn2.hubspot.net/hubfs/53/module-icons/website.svg",
+  "is_available_for_new_content": true,
+  "smart_type": "NOT_SMART",
+  "tags": ["omnia", "embed"]
+}

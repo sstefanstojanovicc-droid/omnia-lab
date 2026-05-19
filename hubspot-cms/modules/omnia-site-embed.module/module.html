@@ -1,0 +1,15 @@
+<div class="omnia-site-embed">
+  {% if module.show_editor_banner %}
+    <div class="omnia-site-embed__banner" role="note">
+      HubSpot test page — embeds the live OMNIA site. Edit <strong>Live site URL</strong> in module settings.
+    </div>
+  {% endif %}
+  <iframe
+    class="omnia-site-embed__frame"
+    src="{{ module.embed_url|escape_url }}"
+    title="OMNIA Lab"
+    loading="eager"
+    allow="fullscreen"
+    referrerpolicy="no-referrer-when-downgrade"
+  ></iframe>
+</div>

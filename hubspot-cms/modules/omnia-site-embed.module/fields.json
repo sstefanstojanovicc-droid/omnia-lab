@@ -1,0 +1,22 @@
+[
+  {
+    "id": "embed_url",
+    "name": "embed_url",
+    "label": "Live site URL",
+    "help_text": "Full URL of the OMNIA site (hosted on Vercel). Changes here update the embedded preview.",
+    "required": false,
+    "locked": false,
+    "type": "text",
+    "default": "https://omnia-lab.co"
+  },
+  {
+    "id": "show_editor_banner",
+    "name": "show_editor_banner",
+    "label": "Show editor banner",
+    "help_text": "Short note for marketers that this page embeds the live site (hidden on publish if you prefer).",
+    "required": false,
+    "locked": false,
+    "type": "boolean",
+    "default": true
+  }
+]

@@ -1,0 +1,53 @@
+[
+  {
+    "id": "logo_text",
+    "name": "logo_text",
+    "label": "Logo text (if no image)",
+    "type": "text",
+    "default": "OMNIA"
+  },
+  {
+    "id": "logo_image",
+    "name": "logo_image",
+    "label": "Logo image (optional)",
+    "type": "image",
+    "default": { "src": "", "alt": "OMNIA" }
+  },
+  {
+    "id": "est_label",
+    "name": "est_label",
+    "label": "Est. label (hidden on mobile)",
+    "type": "text",
+    "default": "Est. 2026"
+  },
+  {
+    "id": "nav_links",
+    "name": "nav_links",
+    "label": "Navigation links",
+    "type": "group",
+    "occurrence": { "min": 1, "max": 8, "default": 4 },
+    "children": [
+      {
+        "id": "nav_links.link_label",
+        "name": "link_label",
+        "label": "Label",
+        "type": "text",
+        "default": "Practice"
+      },
+      {
+        "id": "nav_links.link_href",
+        "name": "link_href",
+        "label": "URL",
+        "type": "url",
+        "supported_types": ["EXTERNAL", "CONTENT", "EMAIL_ADDRESS"],
+        "default": { "type": "EXTERNAL", "href": "#practice" }
+      }
+    ],
+    "default": [
+      { "link_label": "Practice", "link_href": { "type": "EXTERNAL", "href": "#practice" } },
+      { "link_label": "Work", "link_href": { "type": "EXTERNAL", "href": "#work" } },
+      { "link_label": "Studio", "link_href": { "type": "EXTERNAL", "href": "#studio" } },
+      { "link_label": "Contact", "link_href": { "type": "EXTERNAL", "href": "#contact" } }
+    ]
+  }
+]

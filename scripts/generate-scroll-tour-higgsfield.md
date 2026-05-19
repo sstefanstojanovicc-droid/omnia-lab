@@ -1,5 +1,7 @@
 # Architecture scroll tour — Higgsfield
 
+> **Continuity rule (mandatory):** Every clip’s **last frame** must match the **first frame** of the next. Use `room-{NN}-endframe.jpg` as start image, trim joins (SSIM), scrub-encode, then `./scripts/stitch-tour.sh`. Full pipeline: `.cursor/skills/scroll-scrub-video-continuity/SKILL.md`.
+
 The homepage **scroll-scrubs one timeline**: you scroll vertically; the film advances through build phases (same pattern as [Video Scrub on Scroll](https://showcased.webflow.io/projects/video-scrub-on-scroll)).
 
 **Subject:** contemporary architecture (villa / pavilion), not interior-only. Final beat: doors open, POV into the main room.
@@ -96,10 +98,8 @@ Continuing from prior clip. Entrance doors slide open, smooth first-person POV w
 ## Stitch → tour.mp4
 
 ```bash
-cd public/video
-for i in 01 02 03 04 05 06 07; do echo "file 'room-$i.mp4'"; done > tour-list.txt
-ffmpeg -y -f concat -safe 0 -i tour-list.txt -c:v libx264 -pix_fmt yuv420p -movflags +faststart tour.mp4
-rm tour-list.txt
+./scripts/validate-tour-continuity.sh
+./scripts/stitch-tour.sh --encode
 ```
 
 Reload the site — it auto-detects `tour.mp4` and enables full scroll-scrub.

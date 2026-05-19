@@ -1,0 +1,247 @@
+{% set room_count = module.beats|length %}
+<section
+  id="top"
+  class="omnia-scroll-tour"
+  data-omnia-scroll-tour
+  data-room-count="{{ room_count }}"
+  aria-label="Architecture scroll tour"
+>
+  <div class="omnia-scroll-tour__pin">
+    <div class="omnia-scroll-tour__media" aria-hidden="true">
+      <div class="omnia-hero-fallback omnia-scroll-tour__fallback" style="opacity:0;"></div>
+      {% for beat in module.beats %}
+        {% if beat.video_url %}
+          <video
+            class="omnia-scroll-tour-video omnia-scroll-tour__clip"
+            data-beat-index="{{ loop.index0 }}"
+            src="{{ beat.video_url }}"
+            muted
+            playsinline
+            webkit-playsinline
+            preload="auto"
+            disablepictureinpicture
+            style="opacity:{% if loop.first %}1{% else %}0{% endif %};z-index:{{ 10 + loop.index0 }};"
+          ></video>
+        {% endif %}
+      {% endfor %}
+      <div class="omnia-scroll-tour__scrim omnia-scroll-tour__scrim--lr"></div>
+      <div class="omnia-scroll-tour__scrim omnia-scroll-tour__scrim--tb"></div>
+    </div>
+
+    <div class="omnia-scroll-tour__ui">
+      <div class="omnia-scroll-tour__nav">
+        {% for beat in module.beats %}
+          <span class="omnia-scroll-tour__nav-item omnia-mono" data-nav-index="{{ loop.index0 }}">{{ beat.beat_index }}</span>
+        {% endfor %}
+      </div>
+
+      <div class="omnia-scroll-tour__copy">
+        {% for beat in module.beats %}
+          <div class="omnia-scroll-tour__beat-copy" data-copy-index="{{ loop.index0 }}"{% if not loop.first %} hidden{% endif %} style="{% if loop.first %}opacity:1;visibility:visible;{% endif %}">
+            <p class="omnia-scroll-tour__eyebrow omnia-mono">
+              {% if loop.first %}{{ module.direction_label }}{% else %}{{ beat.beat_index }} — {{ beat.beat_title }}{% endif %}
+            </p>
+            <h1 class="omnia-scroll-tour__title omnia-display">{{ beat.beat_title }}</h1>
+            {% if beat.beat_headline %}
+              <p class="omnia-scroll-tour__headline omnia-display">{{ beat.beat_headline }}</p>
+            {% endif %}
+            <p class="omnia-scroll-tour__body omnia-mono">{{ beat.beat_body }}</p>
+            {% if beat.show_cta %}
+              <div class="omnia-scroll-tour__ctas">
+                <a class="omnia-scroll-tour__cta omnia-scroll-tour__cta--primary omnia-mono" href="{{ beat.cta_primary_href.href|default('#work') }}">{{ beat.cta_primary_label }}</a>
+                <a class="omnia-scroll-tour__cta omnia-mono" href="{{ beat.cta_secondary_href.href|default('#contact') }}">{{ beat.cta_secondary_label }}</a>
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="omnia-scroll-tour__progress-row">
+        <span class="omnia-mono omnia-scroll-tour__scroll-label">{{ module.scroll_hint }}</span>
+        <div class="omnia-scroll-tour__progress-track">
+          <div class="omnia-scroll-tour__progress-bar" data-progress-bar></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* HubSpot DND rows often set overflow:hidden and break position:sticky */
+  .dnd-section:has(.omnia-scroll-tour),
+  .dnd-section:has(.omnia-scroll-tour) .row-fluid,
+  .dnd-section:has(.omnia-scroll-tour) [class*="span"],
+  .widget-type-module:has(.omnia-scroll-tour),
+  .hs_cos_wrapper:has(.omnia-scroll-tour) {
+    overflow: visible !important;
+  }
+
+  .omnia-scroll-tour {
+    position: relative;
+    background: var(--smoke);
+    width: 100%;
+    /* height set in JS = roomCount × viewport (vh unreliable in module shells) */
+  }
+  .omnia-scroll-tour__pin {
+    position: relative;
+    width: 100%;
+    height: 100svh;
+    min-height: 560px;
+    overflow: hidden;
+    background: var(--smoke);
+  }
+  .omnia-scroll-tour__pin.is-pinned {
+    /* fixed geometry applied inline by module.js */
+  }
+  .omnia-scroll-tour__pin.is-ended {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+  .omnia-scroll-tour__media { position: absolute; inset: 0; }
+  .omnia-scroll-tour__fallback {
+    position: absolute;
+    inset: 0;
+    transition: none;
+  }
+  .omnia-scroll-tour__clip {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: none;
+    will-change: opacity;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+  .omnia-scroll-tour__scrim { position: absolute; inset: 0; pointer-events: none; }
+  .omnia-scroll-tour__scrim--lr {
+    background: linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.25) 100%);
+  }
+  .omnia-scroll-tour__scrim--tb {
+    background: linear-gradient(180deg, rgba(0,0,0,0.35) 0%, transparent 40%, rgba(0,0,0,0.55) 100%);
+  }
+  .omnia-scroll-tour__ui {
+    position: relative;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 6rem 1.5rem 2.5rem;
+    color: #fff;
+  }
+  @media (min-width: 768px) { .omnia-scroll-tour__ui { padding: 6rem 3rem 2.5rem; } }
+  .omnia-scroll-tour__nav {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5rem;
+    margin-left: auto;
+  }
+  .omnia-scroll-tour__nav-item {
+    font-size: 9px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.25);
+    transition: color 0.3s;
+  }
+  .omnia-scroll-tour__nav-item.is-active { color: #fff; }
+  .omnia-scroll-tour__copy {
+    position: relative;
+    flex: 1;
+    min-height: 220px;
+    margin-top: auto;
+  }
+  .omnia-scroll-tour__beat-copy {
+    position: absolute;
+    inset: auto 0 0 0;
+    max-width: 36rem;
+    transition: none;
+    will-change: opacity;
+  }
+  .omnia-scroll-tour__eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.45em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    margin: 0;
+  }
+  .omnia-scroll-tour__title {
+    margin: 1rem 0 0;
+    font-size: clamp(2.25rem, 6vw, 4.5rem);
+    font-weight: 600;
+    text-transform: uppercase;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+  .omnia-scroll-tour__headline {
+    margin: 0.5rem 0 0;
+    font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+    font-style: italic;
+    font-weight: 400;
+    text-transform: none;
+    color: rgba(255,255,255,0.85);
+  }
+  .omnia-scroll-tour__body {
+    margin: 1.25rem 0 0;
+    max-width: 28rem;
+    font-size: 11px;
+    line-height: 1.65;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+  }
+  .omnia-scroll-tour__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+  .omnia-scroll-tour__cta {
+    display: inline-flex;
+    min-width: 180px;
+    align-items: center;
+    justify-content: center;
+    padding: 0.85rem 2rem;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 1px solid rgba(255,255,255,0.4);
+    color: #fff;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .omnia-scroll-tour__cta--primary {
+    background: #fff;
+    color: var(--ink);
+    border-color: #fff;
+  }
+  .omnia-scroll-tour__progress-row {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+  .omnia-scroll-tour__scroll-label {
+    font-size: 9px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+  }
+  .omnia-scroll-tour__progress-track {
+    flex: 1;
+    max-width: 200px;
+    height: 1px;
+    background: rgba(255,255,255,0.15);
+    overflow: hidden;
+  }
+  .omnia-scroll-tour__progress-bar {
+    height: 100%;
+    width: 0%;
+    background: rgba(255,255,255,0.7);
+    transition: none;
+    will-change: width;
+  }
+</style>

@@ -1,0 +1,9 @@
+[
+  { "id": "eyebrow", "name": "eyebrow", "label": "Eyebrow", "type": "text", "default": "Studio" },
+  { "id": "studio_name", "name": "studio_name", "label": "Name", "type": "text", "default": "Dina Rosic" },
+  { "id": "role", "name": "role", "label": "Role", "type": "text", "default": "Architect & interior designer" },
+  { "id": "bio", "name": "bio", "label": "Bio / manifesto", "type": "text", "default": "Studio practice exploring immersive environments shaped through narrative, atmosphere, and public experience — spaces conceived as emotional worlds — immersive, atmospheric, and collective." },
+  { "id": "portrait", "name": "portrait", "label": "Portrait image", "type": "image", "default": { "src": "https://omnia-lab.co/assets/IMG_4867-83e34d2d-e5ce-42ec-ba29-5a2ab76883b7.png", "alt": "Studio" } },
+  { "id": "instagram_label", "name": "instagram_label", "label": "Instagram handle", "type": "text", "default": "@omnia___lab" },
+  { "id": "instagram_url", "name": "instagram_url", "label": "Instagram URL", "type": "url", "supported_types": ["EXTERNAL"], "default": { "type": "EXTERNAL", "href": "https://www.instagram.com/omnia___lab" } }
+]
